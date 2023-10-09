@@ -2,7 +2,17 @@ import { VStack, Box, Flex, Avatar, Text, MenuButton, MenuItem, Portal, MenuList
 import {BsInstagram} from 'react-icons/bs'
 import {CgMoreO} from 'react-icons/cg'
 import { Link } from 'react-router-dom'
+import { useToast } from '@chakra-ui/react'
+
 const UserHeader = () => {
+  const toast = useToast()
+
+  const copyURL = () =>{
+    const currentURL = window.location.href;
+    navigator.clipboard.writeText(currentURL).then(()=>{
+      toast({description:'Copied'})
+    })
+  }
   return (
     <VStack gap={4} alignItems={"start"}>
       <Flex justifyContent={"space-between"} w={"full"}>
@@ -44,12 +54,22 @@ const UserHeader = () => {
               </MenuButton>
               <Portal>
               <MenuList bg={"gray.dark"}>
-                <MenuItem bg={"gray.dark"}>Link</MenuItem>
+                <MenuItem bg={"gray.dark"} onClick={copyURL}>Link</MenuItem>
               </MenuList>
               </Portal>
             </Menu>
           </Box>
         </Flex>
+      </Flex>
+      <Flex w={"full"} >
+        <Flex flex={1}  justifyContent={"center"} borderBottom={"1.5px solid white"} pb={3} cursor={'pointer'}>
+          <Text fontWeight={'bold'}>Threads</Text>
+        </Flex>
+        <Flex flex={1}  justifyContent={"center"} borderBottom={"1px solid gray"} color={"gray.light"} pb={3} cursor={'pointer'}>
+
+          <Text>Replies</Text>
+        </Flex>
+        
       </Flex>
     </VStack>
   )
