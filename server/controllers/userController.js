@@ -142,7 +142,8 @@ const getUserProfile = async (req, res)=>{
     const user = await User.findOne({username:req.params.username}).select("-password").select("-updatedAt");
     
     if (!user)
-      return res.status(400).json({message:"User not exits"})
+      return res.status(400).json({message:"User not found"})
+    
     res.status(200).json(user)
   }catch(err){
     res.status(500).json({message:err.message})
