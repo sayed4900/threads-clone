@@ -71,32 +71,83 @@ const logoutUser = async(req,res)=>{
     console.log(err);
   }
 }
-
-const followUnfollowUser = async(req,res)=>{
+const updateUser = async(req,res)=>{
+  const {name, email, username, password, profilePic, bio} = req.body;
+  const userId = req.user._id
   try{
-    
-    const {id} = req.body ;
-    const userToModify = await User.findById(id);
-    const currentUser = await User.findById(req.user._id) ; 
 
-    if (id === req.user._id)  return res.status(400).json({message:"You can't follow yourself"})
-    
-    if (!userToModify === !currentUser)  return res.status(400).json({message:"User not found"})
+    if (req.params.id !== req.user._id.toString()) 
+      return res.status(400).json({message:"You can't update other user's profile"})
 
-    const isFollowing = currentUser.following.includes(id);
+    let user = await User.findById(userId);
 
-    if (isFollowing){
-      //unfollow user
-      // await 
-    }else{
-
+    if (password){
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      user.password = hashedPassword;
     }
+    
+    user.name = name || user.name
+    user.email = email || user.email
+    user.username = username || user.username
+    user.profilePic = profilePic || user.profilePic
+    user.bio = bio || user.bio 
 
-    res.json(currentUser)
+    user = await user.save() ; 
+
+    res.status(200).json({message:"Profile updated successfully",user})
   }catch(err){
     res.status(500).json({message:err.message})
     console.log(err);
   }
 }
 
-module.exports = {signupUser, loginUser, logoutUser, followUnfollowUser}
+const followUnfollowUser = async(req,res)=>{
+  try{
+    
+    const {id} = req.params ;
+    const userToModify = await User.findById(id);
+    const currentUser = await User.findById(req.user._id) ; 
+    
+    console.log(id);
+    console.log(req.user._id);
+    if (id === req.user._id.toString())  return res.status(400).json({message:"You can't follow yourself"})
+    
+    if (!userToModify || !currentUser)  return res.status(400).json({message:"User not found"})
+
+    const isFollowing = currentUser.following.includes(id);
+
+    if (isFollowing){
+      //unfollow user
+      await User.findByIdAndUpdate(req.user._id, {$pull : {following: id}}) // current user
+      await User.findByIdAndUpdate(id, {$pull:{followers:req.user._id}})
+
+      res.status(200).json({message:"User unfollow successfully"})
+    }else{
+      // follow user 
+      await User.findByIdAndUpdate(id, {$push:{followers: req.user._id}} )
+      await User.findByIdAndUpdate(req.user._id,{$push:{following: id}} )
+      res.status(200).json({message:"User follow successfully"})
+    }
+
+    
+  }catch(err){
+    res.status(500).json({message:err.message})
+    console.log(err);
+  }
+}
+
+const getUserProfile = async (req, res)=>{
+  try{
+    const user = await User.findOne({username:req.params.username}).select("-password").select("-updatedAt");
+    
+    if (!user)
+      return res.status(400).json({message:"User not exits"})
+    res.status(200).json(user)
+  }catch(err){
+    res.status(500).json({message:err.message})
+    console.log(err);
+  }
+}
+
+module.exports = {signupUser, loginUser, logoutUser, updateUser, followUnfollowUser, getUserProfile}
