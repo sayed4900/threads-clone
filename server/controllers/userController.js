@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const generateTokenAndSetCookie = require('../utils/helpers/generateToken');
+const {v2 : cloudinary} = require='cloudinary'
 
 const signupUser = async (req,res) =>{
   try{
@@ -23,10 +24,12 @@ const signupUser = async (req,res) =>{
     if (newUser){
       generateTokenAndSetCookie(newUser._id, res) ;
       res.status(201).json({
-        _id:newUser._id,
+        _id: newUser._id,
         name: newUser.name,
-        email:newUser.email,
-        username: newUser.username
+        email: newUser.email,
+        username: newUser.username,
+        profilePic: newUser.profilePic,
+        bio: newUser.bio
       })
     }else
       res.status(400).json({error: 'Invalid user data'})
@@ -54,7 +57,9 @@ const loginUser = async (req,res) =>{
       _id: user._id,
       name:user.name,
       username: user.username,
-      email: username.email
+      email: user.email,
+      bio: user.bio,
+      profilePic:user.profilePic
     })
 
   }catch(err){
@@ -72,7 +77,9 @@ const logoutUser = async(req,res)=>{
   }
 }
 const updateUser = async(req,res)=>{
-  const {name, email, username, password, profilePic, bio} = req.body;
+  const {name, email, username, password, bio} = req.body;
+  let {profilePic} = req.body;
+
   const userId = req.user._id
   try{
 
@@ -93,6 +100,13 @@ const updateUser = async(req,res)=>{
     user.profilePic = profilePic || user.profilePic
     user.bio = bio || user.bio 
 
+    if (profilePic){
+      if (user.profilePic){
+        await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split('.')[0])
+      }
+      const uploadRes = await cloudinary.uploader.upload(profilePic)
+      const profilePic = uploadRes.secure_url
+    }
     user = await user.save() ; 
 
     res.status(200).json({message:"Profile updated successfully",user})
