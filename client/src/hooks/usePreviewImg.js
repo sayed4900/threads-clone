@@ -2,7 +2,7 @@
 import  { useState } from 'react'
 import useShowToast from './useShowToast';
 
-const userPreviewImg = () => {
+const usePreviewImg = () => {
   const [imgUrl, setImgUrl] = useState(null);
   const showToast = useShowToast();
   const handleImageChange = e => {
@@ -20,9 +20,9 @@ const userPreviewImg = () => {
       showToast("error", "Please select an image file" ,"error")
       setImgUrl(null)
     }
-    console.log(imgUrl)
+    // console.log(imgUrl)
   }
   return {handleImageChange, imgUrl};
 }
 
-export default userPreviewImg
+export default usePreviewImg

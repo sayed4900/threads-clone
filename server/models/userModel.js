@@ -5,6 +5,7 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  
   username: {
     type:String,
     required: true,
@@ -22,6 +23,9 @@ const userSchema = mongoose.Schema({
   profilePic:{
     type: String,
     default:""
+  },
+  cloudniaryId:{
+    type:String,
   },
   followers:{
     type:[String],

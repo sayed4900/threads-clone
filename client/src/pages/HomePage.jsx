@@ -1,8 +1,12 @@
+import { Text } from '@chakra-ui/react'
 import React from 'react'
+import {Route} from 'react-router-dom'
 
 const HomePage = () => {
   return (
-    <div>HomePage</div>
+    <Text>
+      profile page
+    </Text>
   )
 }
 
