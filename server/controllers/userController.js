@@ -172,6 +172,7 @@ const followUnfollowUser = async(req,res)=>{
 
 const getUserProfile = async (req, res)=>{
   try{
+    
     const user = await User.findOne({username:req.params.username}).select("-password").select("-updatedAt");
     
     if (!user)
