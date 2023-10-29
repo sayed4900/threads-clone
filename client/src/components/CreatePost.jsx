@@ -27,6 +27,7 @@ const CreatePost = () => {
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
   const user = useRecoilValue(userAtom)
   const showToast = useShowToast();
+  const [loading, setLoading] = useState(false);
 
   const handleTextChange = (e)=> {
     const inputText = e.target.value ; 
@@ -42,21 +43,31 @@ const CreatePost = () => {
   }
 
   const handleCreatePost =async () => {
-    const res = await fetch('/api/posts/create', {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({postedBy: user._id, text: postText, image:imgUrl})
-    })
-    const data = await res.json() ; 
+    setLoading(true)
+    try{
+      const res = await fetch('/api/posts/create', {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({postedBy: user._id, text: postText, image:imgUrl})
+      })
+      const data = await res.json() ; 
 
-    if (data.error){
-      showToast("Error", data.error, "error")
-      return ;
+      if (data.error){
+        showToast("Error", data.error, "error")
+        return ;
+      }
+      showToast("Success", data.message, "success") 
+      onClose();
+      setPostText("")
+      setImgUrl("")
+      setRemainingChar(MAX_CHAR)
+    }catch(err){
+      showToast("Error",err,"error")
+    } finally{
+      setLoading(false);
     }
-    showToast("Success", data.message, "success") 
-    onClose();
 
   }
 
@@ -122,7 +133,7 @@ const CreatePost = () => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={handleCreatePost}>
+            <Button colorScheme='blue' mr={3} onClick={handleCreatePost} isLoading={loading}>
               Post
             </Button>
           </ModalFooter>

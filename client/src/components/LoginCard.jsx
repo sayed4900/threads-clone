@@ -24,6 +24,8 @@ import userAtom from '../atoms/userAtom'
 
 export default function LoginCard() {
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const [inputs, setInputs] = useState({
     username:"",
     password:"",
@@ -36,6 +38,7 @@ export default function LoginCard() {
 
   const showToast = useShowToast() ;
   const handleLogin = async () =>{
+    setLoading(true)
     console.log(inputs)
     try{
       const res = await fetch("/api/users/login",{
@@ -60,6 +63,8 @@ export default function LoginCard() {
       showToast("Error",err,"error")
 
       console.log(err)
+    }finally{
+      setLoading(false)
     }
   }
   return (
@@ -123,6 +128,7 @@ export default function LoginCard() {
                   bg : useColorModeValue("gray.700","gray.800")
                 }}
                 onClick={handleLogin}  
+                isLoading={loading}
               >
                 Login
               </Button>

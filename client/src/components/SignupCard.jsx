@@ -25,6 +25,8 @@ import userAtom from '../atoms/userAtom'
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const setAuthScreen =  useSetRecoilState(authScreenAtom)
   
   const [inputs, setInputs] = useState({
@@ -38,6 +40,7 @@ export default function SignupCard() {
   const setUser = useSetRecoilState(userAtom)
 
   const handleSignup = async () => {
+    setLoading(true)
     console.log(inputs);
     try{
       const res = await fetch('/api/users/signup',{
@@ -61,6 +64,8 @@ export default function SignupCard() {
       showToast("Error",err,"error");
 
       console.log(err);
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -135,6 +140,7 @@ export default function SignupCard() {
                   bg : useColorModeValue("gray.700","gray.800")
                 }}
                 onClick={handleSignup}
+                isLoading={loading}
                 >
                 Sign up
               </Button>
