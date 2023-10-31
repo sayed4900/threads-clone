@@ -1,7 +1,8 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const generateTokenAndSetCookie = require('../utils/helpers/generateToken');
-const cloudinary = require('../middlewares/cloudinary')
+const cloudinary = require('../middlewares/cloudinary');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 
 
@@ -173,7 +174,16 @@ const followUnfollowUser = async(req,res)=>{
 const getUserProfile = async (req, res)=>{
   try{
     
-    const user = await User.findOne({username:req.params.username}).select("-password").select("-updatedAt");
+    let user ;
+    const query = req.params.query ; 
+    
+    if (ObjectId.isValid(query)){
+      // query is userId
+      user = await User.findById(query).select("-password").select("-updatedAt") ;
+    }else{
+      // query is username
+      user = await User.findOne({username:query}).select("-password").select("-updatedAt");
+    }
     
     if (!user)
       return res.status(400).json({error:"User not found"})

@@ -33,7 +33,6 @@ const createPost = async (req, res) => {
       text,
       img,
     })
-
     await post.save(); 
 
     res.status(200).json({message:"Post has been created", post})
@@ -93,7 +92,7 @@ const likeUnlikePost = async(req, res) => {
     if (userLikedPost){
       // unlike post
       await Post.findOneAndUpdate({_id:postId},{$pull:{likes:userId}});
-      res.status(200).json({error:"Post unliked successfully"});
+      res.status(200).json({message: "Post unliked successfully"});
     }else{
       // like post
       await Post.updateOne({_id:postId},{$push:{likes:userId}});
@@ -149,7 +148,7 @@ const getFeedPosts = async(req,res)=>{
 
     const posts = await Post.find({postedBy:{$in: following }}).sort({createdAt:-1});
     
-    res.status(200).json({posts})
+    res.status(200).json(posts)
   }catch(err){
     res.status(500).json({error:err.message})
     console.log(err);

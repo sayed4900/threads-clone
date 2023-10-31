@@ -6,8 +6,8 @@ const {createPost, getPost, deletePost, likeUnlikePost, replyToPost, getFeedPost
 router.get('/feed',protectRoute, getFeedPosts)
 router.get('/:id', getPost)
 router.post('/create', protectRoute, createPost)
-router.post('/like/:id', protectRoute, likeUnlikePost)
-router.post('/replay/:id', protectRoute, replyToPost)
+router.put('/like/:id', protectRoute, likeUnlikePost)
+router.put('/replay/:id', protectRoute, replyToPost)
 router.delete('/delete/:id', protectRoute, deletePost)
 
 module.exports = router ;

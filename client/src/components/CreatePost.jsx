@@ -50,7 +50,7 @@ const CreatePost = () => {
         headers:{
           "Content-Type":"application/json"
         },
-        body:JSON.stringify({postedBy: user._id, text: postText, image:imgUrl})
+        body:JSON.stringify({postedBy: user._id, text: postText, img:imgUrl})
       })
       const data = await res.json() ; 
 
