@@ -1,16 +1,21 @@
 /* eslint-disable react/prop-types */
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react'
 import { useState } from 'react'
 import useShowToast from '../hooks/useShowToast';
 import {useRecoilValue} from 'recoil';
 import userAtom from '../atoms/userAtom'
 
 const Actions = ({post:post_}) => {
+  
   const user = useRecoilValue(userAtom);
-  const showToast = useShowToast() ;
   const [post, setPost] = useState(post_);
   const [liked, setLiked] = useState(post_.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false)
+  const [replay, setRepaly] = useState("");
+
+  const showToast = useShowToast() ;
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   
   
   const handleLikeAndUnlike = async() => {
@@ -44,6 +49,39 @@ const Actions = ({post:post_}) => {
       setIsLiking(false)
     }
   }
+
+  const handleReply = async () => {
+    if (!user) return showToast("Error", "You must be logged in to replay to a post", "error")
+
+    try {
+      const res = await fetch(`/api/posts/replay/${post._id}`,{
+        method:"PUT",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({text: replay})
+      })
+      const data = await res.json() ; 
+      console.log(data); 
+      console.log(data.post.replies); 
+      console.log(data.post.replies.length); 
+      const lastReply = data.post.replies[data.post.replies.length - 1]
+
+      if (data.error){
+        showToast("Error", data.error, "error"); 
+        return ;
+      }
+
+      setPost({...post, replies:[...post.replies, lastReply]})
+      
+      showToast("Success", "Replay posted successfully", "success") ;
+      onClose();
+      setRepaly("");
+    } catch (error) {
+      showToast("Error", error.message, "error")
+    }
+  }
+
   return (
     <Flex flexDirection={"column"}>
     <Flex gap={3} my={2} onClick={(e)=> e.preventDefault()}>
@@ -73,9 +111,9 @@ const Actions = ({post:post_}) => {
         role='img'
         viewBox='0 0 24 24'
         width='20'
-        // onClick={onOpen}
+        onClick={onOpen}
       >
-        {/* <title>Comment</title> */}
+        <title>Comment</title>
         <path
           d='M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z'
           fill='none'
@@ -85,7 +123,53 @@ const Actions = ({post:post_}) => {
         ></path>
       </svg>
 
-      <svg
+        <RePostSVG/>
+        <ShareSVG/>
+
+      </Flex>
+      <Flex gap={2} alignItems={'center'}>
+        <Text color={'gray.light'} fontSize={'sm'}>{post?.replies.length} Replies</Text>
+        <Box w={.5} h={.5} borderRadius={'full'} bg={'gray.light'}></Box>
+        <Text color={'gray.light'} fontSize={'sm'}>{post.likes.length} Likes</Text>
+      </Flex>
+      
+
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          {/* <ModalHeader>Reply your account</ModalHeader> */}
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <ModalHeader></ModalHeader>
+              <Input  placeholder='Reply goes here..'
+                value={replay}
+                onChange={(e) => setRepaly(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3}
+              onClick={handleReply}
+            >
+              Reply
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Flex>
+  )
+}
+
+export default Actions
+
+const RePostSVG = () => {
+  return (
+    <svg
         aria-label='Repost'
         color='currentColor'
         fill='currentColor'
@@ -94,49 +178,44 @@ const Actions = ({post:post_}) => {
         viewBox='0 0 24 24'
         width='20'
 		>
-			
+      <title>Repost</title>
 			<path
 				fill=''
 				d='M19.998 9.497a1 1 0 0 0-1 1v4.228a3.274 3.274 0 0 1-3.27 3.27h-5.313l1.791-1.787a1 1 0 0 0-1.412-1.416L7.29 18.287a1.004 1.004 0 0 0-.294.707v.001c0 .023.012.042.013.065a.923.923 0 0 0 .281.643l3.502 3.504a1 1 0 0 0 1.414-1.414l-1.797-1.798h5.318a5.276 5.276 0 0 0 5.27-5.27v-4.228a1 1 0 0 0-1-1Zm-6.41-3.496-1.795 1.795a1 1 0 1 0 1.414 1.414l3.5-3.5a1.003 1.003 0 0 0 0-1.417l-3.5-3.5a1 1 0 0 0-1.414 1.414l1.794 1.794H8.27A5.277 5.277 0 0 0 3 9.271V13.5a1 1 0 0 0 2 0V9.271a3.275 3.275 0 0 1 3.271-3.27Z'
 			></path>
       </svg>
-        
-      <svg
-        aria-label='Share'
-        color=''
-        fill='rgb(243, 245, 247)'
-        height='20'
-        role='img'
-        viewBox='0 0 24 24'
-        width='20'
-      >
-        {/* <title>Share</title> */}
-        <line
-          fill='none'
-          stroke='currentColor'
-          strokeLinejoin='round'
-          strokeWidth='2'
-          x1='22'
-          x2='9.218'
-          y1='3'
-          y2='10.083'
-        ></line>
-        <polygon
-          fill='none'
-          points='11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334'
-          stroke='currentColor'
-          strokeLinejoin='round'
-          strokeWidth='2'
-        ></polygon>
-      </svg>
-      </Flex>
-      <Flex gap={2} alignItems={'center'}>
-        <Text color={'gray.light'} fontSize={'sm'}>{post?.replies.length} Replies</Text>
-        <Box w={.5} h={.5} borderRadius={'full'} bg={'gray.light'}></Box>
-        <Text color={'gray.light'} fontSize={'sm'}>{post.likes.length} Likes</Text>
-      </Flex>
-    </Flex>
   )
 }
 
-export default Actions
+const ShareSVG = () => {
+  return (
+    <svg
+    aria-label='Share'
+    color=''
+    fill='rgb(243, 245, 247)'
+    height='20'
+    role='img'
+    viewBox='0 0 24 24'
+    width='20'
+  >
+    <title>Share</title>
+    <line
+      fill='none'
+      stroke='currentColor'
+      strokeLinejoin='round'
+      strokeWidth='2'
+      x1='22'
+      x2='9.218'
+      y1='3'
+      y2='10.083'
+    ></line>
+    <polygon
+      fill='none'
+      points='11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334'
+      stroke='currentColor'
+      strokeLinejoin='round'
+      strokeWidth='2'
+    ></polygon>
+  </svg>
+  )
+}

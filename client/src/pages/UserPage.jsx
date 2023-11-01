@@ -4,15 +4,17 @@ import UserPost from "../components/UserPost"
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import { Flex, Spinner } from "@chakra-ui/react";
+import Post from '../components/Post'
 
 
 const UserPage = () => {
 
   const [user, setUser] = useState(null);
   const {username} = useParams();
-
   const showToast = useShowToast();
   const [loading, setLoading] = useState(true)
+  const [posts, setPosts] = useState([]);
+  const [fetchingPosts, setFetchingPosts] = useState(true)
 
   useEffect(()=>{
     const getUser = async() => {
@@ -33,7 +35,24 @@ const UserPage = () => {
       }
     }
 
+    const getPosts = async() => {
+      setFetchingPosts(true);
+      try {
+        const res = await fetch(`/api/posts/user/${username}`) ; 
+        const data = await res.json() ; 
+        console.log(data);
+        setPosts(data)
+
+      } catch (err) {
+        showToast("Error",err,"error")
+        setPosts([]);
+      }finally{
+        setFetchingPosts(false)
+      }
+    }
+
     getUser()
+    getPosts()
   },[username, showToast])
 
   if (!user && loading){
@@ -51,13 +70,19 @@ const UserPage = () => {
     return null ;
 
   return (
-
     <>
-      <UserHeader user={user}/>
-      <UserPost likes={1200} replies={455} postImg={"/post1.png"} postTitle="Let's talk about threads."/>
-      <UserPost likes={123} replies={123} postImg={"/post2.png"} postTitle="Nice tutorial."/>
-      <UserPost likes={546} replies={250} postImg={"/post3.png"} postTitle="I love this guy"/>
-      <UserPost likes={1500} replies={357}  postTitle="This in my first thread"/>
+      <UserHeader user={user} />
+
+      {!fetchingPosts && posts.length === 0 && <h1>User has not posts</h1>}
+      {fetchingPosts && posts.length === 0 && (
+        <Flex justifyContent={"center"} my={12}>
+          <Spinner size={"xl"}/>
+        </Flex>
+      )}
+
+      {posts.map((post) => (
+        <Post key={post._id} post={post} postedBy={post.postedBy}/>
+      ))}
     </>
   )
 }
