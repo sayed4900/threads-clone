@@ -13,9 +13,11 @@ import {
 } from '@chakra-ui/react'
 import usePreviewImg from '../hooks/usePreviewImg'
 import { useState } from 'react'
-import{useRecoilValue} from 'recoil'
+import{useRecoilState, useRecoilValue} from 'recoil'
 import userAtom from '../atoms/userAtom'
 import useShowToast from '../hooks/useShowToast'
+import postsAtom from '../atoms/postsAtom'
+import { useParams } from 'react-router-dom'
 
 const MAX_CHAR = 500;
 
@@ -28,6 +30,8 @@ const CreatePost = () => {
   const user = useRecoilValue(userAtom)
   const showToast = useShowToast();
   const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useRecoilState(postsAtom)
+  const {username} = useParams() ;
 
   const handleTextChange = (e)=> {
     const inputText = e.target.value ; 
@@ -53,11 +57,13 @@ const CreatePost = () => {
         body:JSON.stringify({postedBy: user._id, text: postText, img:imgUrl})
       })
       const data = await res.json() ; 
-
+      
       if (data.error){
         showToast("Error", data.error, "error")
         return ;
       }
+      if (username === user.username)
+        setPosts([data.post, ...posts])
       showToast("Success", data.message, "success") 
       onClose();
       setPostText("")
@@ -76,12 +82,12 @@ const CreatePost = () => {
       <Button 
         position={"fixed"}
         bottom={10}
-        right={10}
-        leftIcon={<AddIcon />}
+        right={5}
+        size={"sm"}
         bg={useColorModeValue("gray.300", "gray.dark")}
         onClick={onOpen}
       >
-        Post
+        <AddIcon />
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

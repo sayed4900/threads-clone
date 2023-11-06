@@ -2,6 +2,7 @@ const User = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const generateTokenAndSetCookie = require('../utils/helpers/generateToken');
 const cloudinary = require('../middlewares/cloudinary');
+const Post = require('../models/postModel');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 
@@ -99,10 +100,9 @@ const updateUser = async (req, res) => {
 
 		if (profilePic) {
 			if (user.profilePic) {
-        
 				await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split(".")[0]);
 			}
-
+      
 			const uploadedResponse = await cloudinary.uploader.upload(profilePic);
 			profilePic = uploadedResponse.secure_url;
 		}
@@ -127,6 +127,15 @@ const updateUser = async (req, res) => {
 		// 	{ arrayFilters: [{ "reply.userId": userId }] }
 		// );
 
+    await Post.updateMany({"replies.userId":userId},
+    {
+      $set:{
+        "replies.$[replay].username":user.username,
+        "replies.$[replay].userProfilePic":user.profilePic
+      },
+    },{
+      
+    })
 		// password should be null in response
 		user.password = null;
 

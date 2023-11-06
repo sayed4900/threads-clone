@@ -8,24 +8,30 @@ import { useNavigate, useParams } from "react-router-dom"
 import useShowToast from "../hooks/useShowToast"
 import { formatDistanceToNow } from "date-fns"
 import { DeleteIcon } from "@chakra-ui/icons"
-import { useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import userAtom from "../atoms/userAtom"
+import postsAtom from "../atoms/postsAtom"
 
 const PostPage = () => {
   const {user, loading} = useGetUserProfile() ;
-  const [post, setPost] = useState(null)
   const {pid} = useParams() ;
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const {currentUser} = useRecoilValue(userAtom)
   const showToast = useShowToast() ;
   const navigate = useNavigate() ;
 
+  const currentPost = posts[0];
+
   useEffect(()=>{
+    console.log(posts)
+    console.log(currentPost)
     const getPost = async ()=>{
+      setPosts([]);
       try {
         const res = await fetch(`/api/posts/${pid}`)
         const data = await res.json() ; 
-        setPost(data)
-        console.log(data) ; 
+        setPosts([data])
+        
         if (data.error){
           showToast("Error", data.message, "error")
           return ; 
@@ -35,14 +41,14 @@ const PostPage = () => {
       }
     }
     getPost()
-  },[pid,showToast])
+  },[pid, showToast, setPosts])
 
   const handleDeletePost = async(e) => {
     try {
       e.preventDefault(); 
       if (!window.confirm("Are you sure you want to delete this post?")) return;
       
-      const res =  await fetch(`/api/posts/delete/${post._id}`,{
+      const res =  await fetch(`/api/posts/delete/${currentPost._id}`,{
         method:"DELETE",
       });
       const data = await res.json() ;
@@ -66,8 +72,8 @@ const PostPage = () => {
       </Flex>
     )
   }
-  if (!post)
-    return null ;
+  if (!currentPost)
+    return null;
 
   return (
     <>
@@ -76,28 +82,28 @@ const PostPage = () => {
           <Avatar size={"md"} name={user?.name} src={user?.profilePic}/>
 
           <Flex>
-            <Text fontSize={"sm"} fontWeight={"bold"}>{user.username}</Text>
+            <Text fontSize={"sm"} fontWeight={"bold"}>{user?.username}</Text>
             <Image src="/verified.png" w={4} h={4} ml={4}/>
           </Flex>
         </Flex>
         <Flex gap={4} alignItems={'center'}>
           <Text fontSize={"xs"} width={36} textAlign={"right"} color={'gray.light'}>
-            {formatDistanceToNow(new Date(post.createdAt))} ago</Text>
+            {formatDistanceToNow(new Date(currentPost.createdAt))} ago</Text>
 
           {currentUser?._id === user._id && <DeleteIcon onClick={handleDeletePost}/>}
         </Flex>
       </Flex>
-      <Text my={3}>{post.text}</Text>
-      { post.img &&(
+      <Text my={3}>{currentPost.text}</Text>
+      { currentPost.img &&(
         <Box  borderRadius={6}
         overflow={'hidden'}
         border={"1px solid gray.light"}
         >
-          <Image src={`${post.img}`} w={'full'}/>
+          <Image src={`${currentPost.img}`} w={'full'}/>
         </Box>
       )}
       <Flex gap={3}>
-        <Actions post={post} />
+        <Actions post={currentPost} />
       </Flex>
 
       <Divider my={4}/>
@@ -112,8 +118,9 @@ const PostPage = () => {
 
       <Divider my={4}/>
       
-      {post.replies.map((replay)=>(
-        <Comment key={replay._id}
+      {currentPost.replies.map((replay)=>(
+        <Comment 
+          key={replay._id}
           username={replay.username}
           // likes={replay.}
           comment={replay.text}

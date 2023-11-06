@@ -6,6 +6,8 @@ import useShowToast from "../hooks/useShowToast";
 import { Flex, Spinner } from "@chakra-ui/react";
 import Post from '../components/Post'
 import useGetUserProfile from "../hooks/useGetUserProfile";
+import { useRecoilState } from "recoil";
+import postsAtom from "../atoms/postsAtom";
 
 
 const UserPage = () => {
@@ -13,7 +15,7 @@ const UserPage = () => {
   const {user, loading} = useGetUserProfile()
   const {username} = useParams();
   const showToast = useShowToast();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useRecoilState(postsAtom)
   const [fetchingPosts, setFetchingPosts] = useState(true)
 
   useEffect(()=>{
@@ -25,6 +27,7 @@ const UserPage = () => {
         const data = await res.json() ; 
         console.log(data);
         setPosts(data)
+        console.log(data)
 
       } catch (err) {
         showToast("Error",err,"error")
@@ -36,7 +39,8 @@ const UserPage = () => {
 
     
     getPosts()
-  },[username, showToast])
+  },[username, showToast, setPosts])
+  
 
   if (!user && loading){
     return (
@@ -56,8 +60,8 @@ const UserPage = () => {
     <>
       <UserHeader user={user} />
 
-      {!fetchingPosts && posts.length === 0 && <h1>User has not posts</h1>}
-      {fetchingPosts && posts.length === 0 && (
+      {!fetchingPosts && posts?.length === 0 && <h1>User has not posts</h1>}
+      {fetchingPosts && posts?.length === 0 && (
         <Flex justifyContent={"center"} my={12}>
           <Spinner size={"xl"}/>
         </Flex>

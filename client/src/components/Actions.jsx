@@ -2,14 +2,15 @@
 import { Box, Button, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from '@chakra-ui/react'
 import { useState } from 'react'
 import useShowToast from '../hooks/useShowToast';
-import {useRecoilValue} from 'recoil';
+import {useRecoilState, useRecoilValue} from 'recoil';
 import userAtom from '../atoms/userAtom'
+import postsAtom from '../atoms/postsAtom';
 
-const Actions = ({post:post_}) => {
+const Actions = ({post}) => {
   
   const user = useRecoilValue(userAtom);
-  const [post, setPost] = useState(post_);
-  // console.log(post)
+  
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const [liked, setLiked] = useState(post?.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false)
   const [replay, setRepaly] = useState("");
@@ -37,9 +38,23 @@ const Actions = ({post:post_}) => {
         return ;
       }
       if (!liked){
-        setPost({...post, likes:[...post.likes, user._id]})
+        
+        const updatedPosts = posts.map((p)=>{
+          if(p._id === post._id){
+            return {...p, likes:[ p.likes, user._id ]}
+          }
+          return p;
+        })
+        setPosts(updatedPosts);
       }else{
-        setPost({...post, likes: post.likes.filter(id => id != user._id)})
+        // remove current user._id
+        const updatedPosts = posts.map((p)=>{
+          if(p._id === post._id){
+            return {...p, likes:p.likes.filter((id)=> id !== user._id) }
+          }
+          return p;
+        })
+        setPosts(updatedPosts);
       }
       setLiked(!liked);
       console.log(data)
@@ -63,18 +78,22 @@ const Actions = ({post:post_}) => {
         body:JSON.stringify({text: replay})
       })
       const data = await res.json() ; 
-      console.log(data); 
-      console.log(data.post.replies); 
-      console.log(data.post.replies.length); 
-      const lastReply = data.post.replies[data.post.replies.length - 1]
+    
 
       if (data.error){
         showToast("Error", data.error, "error"); 
         return ;
       }
 
-      setPost({...post, replies:[...post.replies, lastReply]})
-      
+      const updatedPosts = posts.map((p)=>{
+        if (p._id === post._id){  
+          return { ...p, replies:[...p.replies, data] }
+        }
+        return p ;
+      })
+
+      setPosts(updatedPosts)
+
       showToast("Success", "Replay posted successfully", "success") ;
       onClose();
       setRepaly("");
@@ -95,6 +114,7 @@ const Actions = ({post:post_}) => {
           viewBox='0 0 24 22'
           width='20'
           onClick={handleLikeAndUnlike}
+          cursor={"pointer"}
 				>
 					<path
 						d='M1 7.66c0 4.575 3.899 9.086 9.987 12.934.338.203.74.406 1.013.406.283 0 .686-.203 1.013-.406C19.1 16.746 23 12.234 23 7.66 23 3.736 20.245 1 16.672 1 14.603 1 12.98 1.94 12 3.352 11.042 1.952 9.408 1 7.328 1 3.766 1 1 3.736 1 7.66Z'
@@ -113,6 +133,7 @@ const Actions = ({post:post_}) => {
         viewBox='0 0 24 24'
         width='20'
         onClick={onOpen}
+        cursor={"pointer"}
       >
         <title>Comment</title>
         <path
@@ -178,6 +199,8 @@ const RePostSVG = () => {
         role='img'
         viewBox='0 0 24 24'
         width='20'
+        cursor={"pointer"}
+
 		>
       <title>Repost</title>
 			<path
@@ -198,6 +221,8 @@ const ShareSVG = () => {
     role='img'
     viewBox='0 0 24 24'
     width='20'
+    cursor={"pointer"}
+
   >
     <title>Share</title>
     <line
