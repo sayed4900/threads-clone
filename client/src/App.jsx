@@ -1,5 +1,5 @@
 
-import {Container} from "@chakra-ui/react"
+import {Box, Container} from "@chakra-ui/react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import UserPage from "./pages/UserPage" //////////////////
 import PostPage from "./pages/PostPage"
@@ -10,40 +10,42 @@ import { useRecoilValue } from "recoil"
 import userAtom from "./atoms/userAtom"
 import CreatePost from "./components/CreatePost"
 import UpdateProfilePage from "./pages/UpdateProfilePage"
+import ChatPage from "./pages/ChatPage"
 
 
 function App() {
   const user = useRecoilValue(userAtom);
   
   return (
-    <Container maxW="620">
-      <Header/>
-      <Routes>
-        <Route path="/" element={user ? <HomePage/> :<Navigate to="/auth"/> }/>
-        <Route path="/auth" element={!user ? <AuthPage/>: <Navigate to="/"/> }/>
-        <Route path="/update" element={user ? <UpdateProfilePage/>: <Navigate to="/auth"/> }/>
+    <Box position={"relative"} w={"full"}>
+      <Container maxW="620">
+        <Header/>
+        <Routes>
+          <Route path="/" element={user ? <HomePage/> :<Navigate to="/auth"/> }/>
+          <Route path="/auth" element={!user ? <AuthPage/>: <Navigate to="/"/> }/>
+          <Route path="/update" element={user ? <UpdateProfilePage/>: <Navigate to="/auth"/> }/>
 
-        <Route path="/:username" element=
-        {
-          <>
-          {user ? (
+          <Route path="/:username" element=
+          {
             <>
-              <UserPage />
-              <CreatePost/>
+            {user ? (
+              <>
+                <UserPage />
+                <CreatePost/>
+              </>
+            ) : (
+              <UserPage/>
+            )
+            
+            }
             </>
-          ) : (
-            <UserPage/>
-          )
-          
-          }
-          </>
-        }/>
-        <Route path="/:username/post/:pid" element={<PostPage />}/>
-      </Routes>
+          }/>
+          <Route path="/:username/post/:pid" element={<PostPage />}/>
+          <Route path="/chat" element={ user ? <ChatPage /> : <Navigate to={"/auth"} />}/>
+        </Routes>
 
-    
-    
-    </Container>
+      </Container>
+    </Box>
   )
 }
 

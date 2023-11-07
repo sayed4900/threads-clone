@@ -133,9 +133,9 @@ const updateUser = async (req, res) => {
         "replies.$[replay].username":user.username,
         "replies.$[replay].userProfilePic":user.profilePic
       },
-    },{
-      
-    })
+    },
+      {arrayFilters:[{"replay.userId":userId}]}
+    )
 		// password should be null in response
 		user.password = null;
 

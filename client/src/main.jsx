@@ -33,17 +33,6 @@ const colors = {
 const theme = extendTheme({ config, styles, colors });
 
 
-// ReactDOM.createRoot(document.getElementById('root')).render(
-//   <React.StrictMode>
-//     <BrowserRouter>
-//       <ChakraProvider>
-//         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-//           <App />
-//         </ChakraProvider>
-//     </BrowserRouter>
-//   </React.StrictMode>,
-// )
-
 ReactDOM.createRoot(document.getElementById("root")).render(
 	// React.StrictMode renders every component twice (in the initial render), only in development.
 	<React.StrictMode>
