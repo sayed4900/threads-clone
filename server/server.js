@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
+const messageRoutes = require('./routes/messageRoutes');
 
 
 
@@ -25,5 +26,6 @@ app.use(cookieParser())
 // routes
 app.use('/api/users',userRoutes);
 app.use('/api/posts',postRoutes);
+app.use('/api/messages',messageRoutes);
 
 app.listen(port, ()=> console.log("server is running on port "+port))
