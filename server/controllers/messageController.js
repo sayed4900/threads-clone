@@ -76,7 +76,11 @@ const getConversations = async (req,res)=>{
 
     // remove the current user from participants 
 
-    const otherUser = 
+    conversations.forEach(conversation => {
+      conversation.participants = conversation.participants.filter(
+        participant => participant._id.toString() !== userId.toString()
+      );
+    })
 
     res.status(200).json(conversations) ;
   } catch (error) {

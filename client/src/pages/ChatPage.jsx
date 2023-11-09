@@ -7,13 +7,14 @@ import MessageContainer from '../components/MessageContainer'
 import Message from '../components/Message'
 import useShowToast from '../hooks/useShowToast'
 import { useRecoilState } from 'recoil'
-import { conversationAtom } from '../atoms/messagesAtom'
+import { conversationAtom, selectedConversationAtom } from '../atoms/messagesAtom'
 
 const ChatPage = () => {
   const showToast = useShowToast() ;
   const [loadingConversations, setLoadingConversations] = useState(true) ; 
   const [conversations, setConversations] = useRecoilState(conversationAtom) ;
-  
+  const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
+
   useEffect(()=>{
     
     const getConversations = async () => {
@@ -107,7 +108,7 @@ const ChatPage = () => {
         
           
         </Flex>
-        {/* <Flex 
+        {!selectedConversation._id &&(<Flex 
           flex={70}
           borderRadius={"md"}
           flexDir={"column"}
@@ -118,8 +119,8 @@ const ChatPage = () => {
         >
           <GiConversation size={100}/>
           <Text fontSize={20}>Select a conversation to start messaging</Text>
-        </Flex> */}
-        <MessageContainer/>
+        </Flex>)}
+        {selectedConversation._id && <MessageContainer />}
 
       </Flex>
     </Box>

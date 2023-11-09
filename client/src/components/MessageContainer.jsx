@@ -1,9 +1,31 @@
 import { Avatar, Divider, Flex, Image, Skeleton, SkeletonCircle, Text, useColorModeValue } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Message from './Message'
 import MessagesInput from './MessagesInput'
+import useShowToast from '../hooks/useShowToast'
+import { selectedConversationAtom } from '../atoms/messagesAtom'
+import { useRecoilState } from 'recoil'
 
 const MessageContainer = () => {
+  const showToast = useShowToast();
+  const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
+  useEffect(() => {
+    const getMessages = async () =>{
+      try {
+        const res = await fetch(`/api/messages/${selectedConversation.userId}`) ;
+        const data = await res.json()
+        console.log(data)
+        if (data.error){
+          showToast("Error", data.error, "error") ;
+          return ;
+        }
+      } catch (error) {
+        showToast("Error", error.message, "error")
+      }
+    }
+    getMessages();
+  },[showToast, selectedConversation.userId])
+
   return (
     <Flex flex="70"
       bg={useColorModeValue("gary.200", "gray.dark")}
