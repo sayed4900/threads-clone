@@ -1,7 +1,8 @@
 import { Avatar, AvatarBadge, Flex, Image, Stack, Text, WrapItem, useColorModeValue } from '@chakra-ui/react'
 import React from 'react'
 
-const Conversation = () => {
+const Conversation = ({conversation}) => {
+  console.log(conversation)
   return (
     <Flex
       gap={4}
@@ -25,10 +26,10 @@ const Conversation = () => {
       </WrapItem>
       <Stack direction={"column"} fontSize={"sm"}>
         <Text fontWeight="700" display={"flex"} alignItems={"center"}>
-          Sayed <Image src="./verified.png" w={4} h={4} ml={1} />
+          <Image src="./verified.png" w={4} h={4} ml={1} />
         </Text>
         <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>
-          Hello, my name is X
+          {conversation.lastMessage.text}
         </Text>
       </Stack>
       

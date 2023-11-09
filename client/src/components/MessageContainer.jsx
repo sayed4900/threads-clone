@@ -23,7 +23,7 @@ const MessageContainer = () => {
       <Flex flexDir={"column"} gap={4} my={4} p={2}
         height={"400px"}  overflowY={"auto"} 
       >
-        {true &&(
+        {false &&(
           [...Array(5)].map((_,i)=>(
             <Flex key={i}
               gap={2}
