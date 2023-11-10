@@ -6,15 +6,19 @@ import Conversation from '../components/Conversation'
 import MessageContainer from '../components/MessageContainer'
 import Message from '../components/Message'
 import useShowToast from '../hooks/useShowToast'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { conversationAtom, selectedConversationAtom } from '../atoms/messagesAtom'
+import userAtom from '../atoms/userAtom'
 
 const ChatPage = () => {
-  const showToast = useShowToast() ;
   const [loadingConversations, setLoadingConversations] = useState(true) ; 
+  const [searchText, setSearchText] = useState("") ; 
+  const [searchingUser, setSearchingUser] = useState(false) ;
   const [conversations, setConversations] = useRecoilState(conversationAtom) ;
   const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
-
+  const currentUser = useRecoilValue(userAtom) ;
+  const showToast = useShowToast() ;
+  
   useEffect(()=>{
     
     const getConversations = async () => {
@@ -38,6 +42,43 @@ const ChatPage = () => {
 
     getConversations();
   },[showToast, setConversations])
+
+  const handleConversationSearch = async (e) => {
+    e.preventDefault()
+    setSearchingUser(true) ;
+    try {
+      const res = await fetch(`/api/users/profile/${searchText}`) ; 
+      const searchedUser = await res.json() ;
+      if (searchedUser.error){
+        showToast("Error", searchedUser.error, "error")
+        return ;
+      }
+      console.log(searchedUser) ;
+
+      if (searchedUser._id === currentUser._id){
+        showToast("Error", "You can't message your self", "error") ;
+        return ;
+      } 
+
+      // If user is already on conversation
+      const foundConversation = conversations.find(
+        (conversation) => conversation.participants[0]._id === searchedUser._id
+      );
+
+      if (foundConversation){
+        setSelectedConversation(
+          {_id:foundConversation._id, userId:searchedUser._id,
+          username:searchedUser.username,userProfilePic:searchedUser.profilePic
+          }
+          )
+      }
+
+    } catch (error) {
+      showToast("Error", error.message, "error")
+    }finally{
+      setSearchingUser(false) ;
+    }
+  }
 
   return (
     <Box position={"absolute"}
@@ -76,10 +117,14 @@ const ChatPage = () => {
           <Text fontWeight={700} color={useColorModePreference("gray.600", "gray.400")}>
             Your Conversations
           </Text>
-          <form>
+          <form onSubmit={handleConversationSearch}>
             <Flex alignItems={"center"} gap={2}>
-              <Input placeholder='Search for a user'/>
-              <Button size={"sm"} alignItems={"center"}  >
+              <Input placeholder='Search for a user'
+              onChange={(e) => setSearchText(e.target.value)}/>
+
+              <Button size={"sm"} alignItems={"center"}
+              isLoading={searchingUser}
+              onClick={handleConversationSearch}  >
               
                 <SearchIcon/>
               </Button>
