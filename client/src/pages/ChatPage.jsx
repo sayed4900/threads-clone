@@ -18,10 +18,10 @@ const ChatPage = () => {
   const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
   const currentUser = useRecoilValue(userAtom) ;
   const showToast = useShowToast() ;
-  
+  console.log(selectedConversation)
   useEffect(()=>{
-    
     const getConversations = async () => {
+      if (selectedConversation.mock) return ;
       try{
         const res = await fetch("/api/messages/conversations") ; 
         const data = await res.json() ; 
@@ -64,7 +64,6 @@ const ChatPage = () => {
       const foundConversation = conversations.find(
         (conversation) => conversation.participants[0]._id === searchedUser._id
       );
-
       if (foundConversation){
         setSelectedConversation(
           {_id:foundConversation._id, userId:searchedUser._id,
@@ -72,6 +71,26 @@ const ChatPage = () => {
           }
           )
       }
+      
+      // if there is no conversation
+      
+      const mockConversation = {
+        mock:true,
+        lastMessage:{
+          text:"",
+          sender:""
+        },
+        _id:Date.now(),
+        participants:[
+          {
+          _id: searchedUser._id,
+          username: searchedUser.username,
+          profilePic: searchedUser.profilePic
+          }
+        ]
+      }
+      
+      setConversations((prevConvs) => [...prevConvs, mockConversation])
 
     } catch (error) {
       showToast("Error", error.message, "error")

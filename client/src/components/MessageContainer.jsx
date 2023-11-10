@@ -17,16 +17,17 @@ const MessageContainer = () => {
   useEffect(() => {
     const getMessages = async () =>{
       try {
+        if (selectedConversation.mock) return ;
         setMessages([]);
         setLoadingMessages(true);
         const res = await fetch(`/api/messages/${selectedConversation.userId}`) ;
         const data = await res.json()
         console.log(data)
-        setMessages(data)
         if (data.error){
           showToast("Error", data.error, "error") ;
           return ;
         }
+        setMessages(data)
       } catch (error) {
         showToast("Error", error.message, "error")
       }finally{
