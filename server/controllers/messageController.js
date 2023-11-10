@@ -6,7 +6,7 @@ const sendMessage = async (req,res)=>{
     const {recipientedId, message} = req.body;
     const senderId = req.user._id ; 
     if (senderId === recipientedId){
-      return res.status().json({error:"You can't send a message to your self"})
+      return res.status(400).json({error:"You can't send a message to your self"})
     }
     let conversation = await Conversation.findOne({
       participants: {$all : [senderId, recipientedId]}

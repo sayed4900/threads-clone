@@ -14,7 +14,7 @@ const Actions = ({post}) => {
   const [liked, setLiked] = useState(post?.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false)
   const [replay, setRepaly] = useState("");
-
+  
   const showToast = useShowToast() ;
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -152,7 +152,7 @@ const Actions = ({post}) => {
       <Flex gap={2} alignItems={'center'}>
         <Text color={'gray.light'} fontSize={'sm'}>{post?.replies.length} Replies</Text>
         <Box w={.5} h={.5} borderRadius={'full'} bg={'gray.light'}></Box>
-        <Text color={'gray.light'} fontSize={'sm'}>{post?.likes.length} Likes</Text>
+        <Text color={'gray.light'} fontSize={'sm'}>{post.likes.length} Likes</Text>
       </Flex>
       
 
