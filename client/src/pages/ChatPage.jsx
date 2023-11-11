@@ -1,7 +1,7 @@
 import { SearchIcon} from '@chakra-ui/icons'
 import {GiConversation} from 'react-icons/gi'
 import { Box, Button, Flex, Input, Skeleton, SkeletonCircle, Text, useColorMode, useColorModePreference } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Conversation from '../components/Conversation'
 import MessageContainer from '../components/MessageContainer'
 import Message from '../components/Message'
@@ -9,6 +9,7 @@ import useShowToast from '../hooks/useShowToast'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { conversationAtom, selectedConversationAtom } from '../atoms/messagesAtom'
 import userAtom from '../atoms/userAtom'
+import { useSocket } from '../context/SocketContext'
 
 const ChatPage = () => {
   const [loadingConversations, setLoadingConversations] = useState(true) ; 
@@ -18,7 +19,8 @@ const ChatPage = () => {
   const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
   const currentUser = useRecoilValue(userAtom) ;
   const showToast = useShowToast() ;
-  console.log(selectedConversation)
+  const {socket, onlineUsers} = useSocket() 
+  
   useEffect(()=>{
     const getConversations = async () => {
       if (selectedConversation.mock) return ;
@@ -166,7 +168,9 @@ const ChatPage = () => {
 
           {!loadingConversations && 
             conversations.map((conversation)=>(
-              <Conversation key={conversation._id} conversation={conversation}/>
+              <Conversation key={conversation._id} conversation={conversation}
+                isOnline={onlineUsers.includes(conversation.participants[0]._id)}
+              />
             ))
           }
         

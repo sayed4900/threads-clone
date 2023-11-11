@@ -7,6 +7,8 @@ const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 
+const {app, server} = require('./socket/socket.js')
+
 
 
 
@@ -14,7 +16,7 @@ connectDB();
 dotenv.config(); 
 
 // 
-const app = express(); 
+
 const port = process.env.PORT ;
 
 
@@ -28,4 +30,4 @@ app.use('/api/users',userRoutes);
 app.use('/api/posts',postRoutes);
 app.use('/api/messages',messageRoutes);
 
-app.listen(port, ()=> console.log("server is running on port "+port))
+server.listen(port, ()=> console.log("server is running on port "+port))
