@@ -6,7 +6,8 @@ const messageSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:"User"
   },
-  text:String
+  text:String,
+  seen:{type:Boolean,default:false}
 },{
   timestamps:true
 })

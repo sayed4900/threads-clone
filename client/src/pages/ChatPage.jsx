@@ -45,6 +45,28 @@ const ChatPage = () => {
     getConversations();
   },[showToast, setConversations])
 
+
+  useEffect(()=>{
+    socket?.on("messageSeen",({conversationId})=>{
+      setConversations(prev => {
+        const updatedConversations = prev.map((conversation) =>{
+          if (conversation._id === conversationId){
+            
+            return {
+              ...conversation,
+              lastMessage:{
+                ...conversation.lastMessage,
+                seen:true
+              }
+            }
+          }
+          return conversation
+        })
+        return updatedConversations;
+      })
+    })
+  },[socket, conversations, setConversations])
+
   const handleConversationSearch = async (e) => {
     e.preventDefault()
     setSearchingUser(true) ;
@@ -100,6 +122,8 @@ const ChatPage = () => {
       setSearchingUser(false) ;
     }
   }
+
+
 
   return (
     <Box position={"absolute"}
@@ -169,7 +193,7 @@ const ChatPage = () => {
           {!loadingConversations && 
             conversations.map((conversation)=>(
               <Conversation key={conversation._id} conversation={conversation}
-                isOnline={onlineUsers.includes(conversation.participants[0]._id)}
+                isOnline={onlineUsers.includes(conversation?.participants[0]?._id)}
               />
             ))
           }
