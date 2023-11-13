@@ -8,12 +8,19 @@ import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/useLogout";
 import authScreenAtom from "../atoms/authAtom";
 import { BsFillChatQuoteFill } from "react-icons/bs";
+import {FaBell} from 'react-icons/fa' ;
+import { useEffect } from "react";
+import notificationAtom from '../atoms/notificationAtom';
 
 const Header = () => {
   const {colorMode, toggleColorMode} = useColorMode();
   const user = useRecoilValue(userAtom);
   const logout = useLogout() ;
   const setAuthScreen = useSetRecoilState(authScreenAtom)
+
+  const notifications = useRecoilValue(notificationAtom)
+
+  console.log(notifications)
   
   return (
     <Flex justifyContent={"space-between"} mt={"6"} mb={"12"}>
@@ -42,6 +49,9 @@ const Header = () => {
           </Link>
           <Link as={RouterLink} to={`/chat`}>
             <BsFillChatQuoteFill size={"20"}/>
+          </Link>
+          <Link>
+            <FaBell size={"18"}/>
           </Link>
           <Button
             onClick={logout}

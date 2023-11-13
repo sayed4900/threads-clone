@@ -36,6 +36,15 @@ io.on('connection',(socket)=>{
     }
   })
 
+  // socket.on("likeNotification",async(userId,post)=>{
+  //   try {
+      1
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // })
+  // socket.on("newNotification")
+
   socket.on('disconnect', () => {
     console.log("user disconnected")
     delete userSocketMap[userId];

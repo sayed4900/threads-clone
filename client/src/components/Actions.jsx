@@ -5,6 +5,7 @@ import useShowToast from '../hooks/useShowToast';
 import {useRecoilState, useRecoilValue} from 'recoil';
 import userAtom from '../atoms/userAtom'
 import postsAtom from '../atoms/postsAtom';
+import { useSocket } from '../context/SocketContext';
 
 const Actions = ({post}) => {
   
@@ -14,6 +15,8 @@ const Actions = ({post}) => {
   const [liked, setLiked] = useState(post?.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false)
   const [replay, setRepaly] = useState("");
+  const {socket} = useSocket() ;
+
   
   const showToast = useShowToast() ;
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -37,15 +40,18 @@ const Actions = ({post}) => {
         showToast("Error", data.error, "error"); 
         return ;
       }
+      
       if (!liked){
         
         const updatedPosts = posts.map((p)=>{
           if(p._id === post._id){
-            return {...p, likes:[ p.likes, user._id ]}
+            
+            return {...p, likes:[ ...p.likes, user._id ]}
           }
           return p;
         })
         setPosts(updatedPosts);
+
       }else{
         // remove current user._id
         const updatedPosts = posts.map((p)=>{
@@ -58,6 +64,8 @@ const Actions = ({post}) => {
       }
       setLiked(!liked);
       console.log(data)
+      
+      
 
     } catch (error) {
       showToast("Error", error.message, "error")
@@ -152,7 +160,7 @@ const Actions = ({post}) => {
       <Flex gap={2} alignItems={'center'}>
         <Text color={'gray.light'} fontSize={'sm'}>{post?.replies.length} Replies</Text>
         <Box w={.5} h={.5} borderRadius={'full'} bg={'gray.light'}></Box>
-        <Text color={'gray.light'} fontSize={'sm'}>{post.likes.length} Likes</Text>
+        <Text color={'gray.light'} fontSize={'sm'}>{post?.likes.length} Likes</Text>
       </Flex>
       
 

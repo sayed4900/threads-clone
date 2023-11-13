@@ -1,7 +1,10 @@
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 
-const cloudinary = require('../middlewares/cloudinary')
+const cloudinary = require('../middlewares/cloudinary');
+const Notification = require("../models/notificationModel");
+const {io, getRecipientSocketId } = require("../socket/socket");
+
 
 
 const createPost = async (req, res) => {
@@ -96,6 +99,19 @@ const likeUnlikePost = async(req, res) => {
     }
     
     const userLikedPost = post.likes.includes(userId);
+    
+    
+    const notification = await new Notification({
+      recipient:post.postedBy.toString(),
+      sender:userId,type:"like",
+      postId,seen:false
+    })
+    await notification.save() ;
+    
+    const recipientSocketId = getRecipientSocketId(post.postedBy.toString()) ; 
+    if (recipientSocketId){  
+      io.to(recipientSocketId).emit("newNotification",notification)
+    }
 
     if (userLikedPost){
       // unlike post
@@ -106,6 +122,7 @@ const likeUnlikePost = async(req, res) => {
       await Post.updateOne({_id:postId},{$push:{likes:userId}});
       res.status(200).json({message:"Post liked successfully"});
     }
+
     
   }catch(err){
     res.status(500).json({error:err.message})

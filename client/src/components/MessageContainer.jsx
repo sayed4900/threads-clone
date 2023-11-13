@@ -101,6 +101,9 @@ const MessageContainer = () => {
     messageEndRef.current?.scrollIntoView(({view:"smooth"}))
   },[messages])
 
+  
+  
+
   return (
     <Flex flex="70"
       bg={useColorModeValue("gary.200", "gray.dark")}
