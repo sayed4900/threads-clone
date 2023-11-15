@@ -5,8 +5,8 @@ const getNotifications = async(req,res) =>{
   try {
     const notifications = await Notification.find({recipient:req.user._id}).populate({
       path:"sender",
-      select:"username profilePic"
-    }) ; 
+      select:" _id username profilePic"
+    }).sort({createdAt:"1"}).lean() ; 
     
     res.status(200).json(notifications)
   } catch (err) {

@@ -32,7 +32,7 @@ export const SocketContextProvider = ({children}) =>{
       setOnlineUsers(users);
     })
 
-    socket?.on("newNotification",(notification)=>{
+    socket.on("newNotification",(notification)=>{
       setNotifications((prev)=>[...prev, notification])
       console.log(notification.sender)
       if (notification.sender !== user._id)

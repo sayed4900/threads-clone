@@ -108,11 +108,7 @@ const likeUnlikePost = async(req, res) => {
     })
     await notification.save() ;
     
-    const recipientSocketId = getRecipientSocketId(post.postedBy.toString()) ; 
-    if (recipientSocketId){  
-      io.to(recipientSocketId).emit("newNotification",notification)
-    }
-
+  
     if (userLikedPost){
       // unlike post
       await Post.findOneAndUpdate({_id:postId},{$pull:{likes:userId}});
@@ -120,6 +116,10 @@ const likeUnlikePost = async(req, res) => {
     }else{
       // like post
       await Post.updateOne({_id:postId},{$push:{likes:userId}});
+      const recipientSocketId = getRecipientSocketId(post.postedBy.toString()) ; 
+      if (recipientSocketId){  
+        io.to(recipientSocketId).emit("newNotification",notification)
+      }
       res.status(200).json({message:"Post liked successfully"});
     }
 
