@@ -118,7 +118,7 @@ const likeUnlikePost = async(req, res) => {
       await Post.updateOne({_id:postId},{$push:{likes:userId}});
       const recipientSocketId = getRecipientSocketId(post.postedBy.toString()) ; 
       if (recipientSocketId){  
-        io.to(recipientSocketId).emit("newNotification",notification)
+        io.to(recipientSocketId).emit("newNotification",{notification,senderUser:req.user})
       }
       res.status(200).json({message:"Post liked successfully"});
     }

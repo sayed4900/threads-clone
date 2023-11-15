@@ -12,6 +12,7 @@ import {FaBell} from 'react-icons/fa' ;
 import notificationAtom from '../atoms/notificationAtom';
 import { useState } from "react";
 import NotificationItem from "./NotificationItem";
+import NotificationBell from "./NotificationBell";
 
 const Header = () => {
   const {colorMode, toggleColorMode} = useColorMode();
@@ -20,11 +21,7 @@ const Header = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom)
   const notifications = useRecoilValue(notificationAtom)
 
-  const [isOpen, setIsOpen] = useState(false) ; 
-
-  const toggleBell = () =>{
-    setIsOpen(!isOpen)
-  }
+  
   
   
   return (
@@ -55,26 +52,7 @@ const Header = () => {
           <Link as={RouterLink} to={`/chat`}>
             <BsFillChatQuoteFill size={"20"}/>
           </Link>
-          <Box onClick={toggleBell} position={"relative"} zIndex={"100"}>
-            <FaBell size={"18"}/>
-          {isOpen && 
-          
-            <Box width={"370px"} h={"270px"} borderRadius={"sm"}
-              bg={"gray.700"} position={"absolute"} top={"40px"} right={"-15px"}
-              flexDirection={"column"}
-            >
-              {notifications.length > 0 && <Text color={"black"} textAlign={"center"} > Show All Notifications</Text> }
-              {notifications.length > 0 ? (
-              notifications.slice(-3).reverse().map((notification, index) => (
-              <NotificationItem key={index} notification={notification} />
-          ))
-          ) : (
-            <Text textAlign={"center"} my={"50px"}  color={"white"}>No new notifications</Text>
-          )}
-            </Box>
-            
-          }
-          </Box>
+          {user && <NotificationBell notifications={notifications} />}
           <Button
             onClick={logout}
             size={"xs"}

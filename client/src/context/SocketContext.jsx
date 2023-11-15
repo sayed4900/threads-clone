@@ -32,11 +32,16 @@ export const SocketContextProvider = ({children}) =>{
       setOnlineUsers(users);
     })
 
-    socket.on("newNotification",(notification)=>{
+    socket.on("newNotification",({notification,senderUser})=>{
+      notification.sender={} ;
+      notification.sender.username= senderUser.username
+      notification.sender.profilePic= senderUser.profilePic
+      
       setNotifications((prev)=>[...prev, notification])
       console.log(notification.sender)
-      if (notification.sender !== user._id)
-        showToast("Notification", "new notification", "success")
+      
+      if (senderUser._id !== user._id)
+        showToast("Notification", "You have a new notification", "success")
     })
 
 
