@@ -87,7 +87,7 @@ const NotificationBell = ({ notifications }) => {
           ref={notificationBoxRef}
           overflowY={"scroll"}
         >
-          {notifications.length > 0 && <Text textAlign="center">Show All Notifications</Text>}
+          {/* {notifications.length > 0 && <Text textAlign="center">Show All Notifications</Text  >} */}
           {notifications.length > 0 ? (
             notifications.map((notification, index) => (
               <NotificationItem key={index} notification={notification} setIsOpen={setIsOpen} />

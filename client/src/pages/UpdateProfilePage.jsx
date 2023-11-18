@@ -15,6 +15,7 @@ import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
+import {Link} from 'react-router-dom'
 
 export default function UpdateProfilePage() {
 	const [user, setUser] = useRecoilState(userAtom);
@@ -136,17 +137,19 @@ export default function UpdateProfilePage() {
 							type='password'
 						/>
 					</FormControl>
-					<Stack spacing={6} direction={["column", "row"]}>
+					<Stack spacing={6} direction={"row"} >
 						<Button
-							bg={"red.400"}
-							color={"white"}
-							w='full'
-							_hover={{
-								bg: "red.500",
-							}}
-						>
+						bg={"red.400"}
+						color={"white"}
+						w='full'
+						_hover={{
+							bg: "red.500",
+						}}
+					>
+						<Link to={`/${user.username}`}>
 							Cancel
-						</Button>
+						</Link>
+					</Button>
 						<Button
 							bg={"green.400"}
 							color={"white"}

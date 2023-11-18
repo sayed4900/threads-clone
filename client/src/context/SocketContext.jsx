@@ -32,12 +32,12 @@ export const SocketContextProvider = ({children}) =>{
       setOnlineUsers(users);
     })
 
-    socket.on("newNotification",({notification,senderUser})=>{
+    socket.on("newNotification",({notification,senderUser,})=>{
       notification.sender={} ;
       notification.sender.username= senderUser.username
       notification.sender.profilePic= senderUser.profilePic
       
-      setNotifications((prev)=>[...prev, notification])
+      setNotifications((prev)=>[notification,...prev])
       console.log(notification.sender)
       
       if (senderUser._id !== user._id)
@@ -74,7 +74,7 @@ export const SocketContextProvider = ({children}) =>{
     getNotifications();
   },[showToast, user])
 
-
+  console.log(notifications)
   
   return(
     <SocketContext.Provider value={{socket, onlineUsers}}>

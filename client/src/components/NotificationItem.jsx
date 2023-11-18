@@ -42,8 +42,6 @@ const NotificationItem = ({notification}) => {
     event.stopPropagation()
     try {
       
-      
-
       await fetch(`/api/notifications/${notification._id}`,{
         method:"PUT",
         headers:{
@@ -76,10 +74,16 @@ const NotificationItem = ({notification}) => {
         {!notification.seen &&
         <Box width={"8px"} h={"8px"} borderRadius={"50%"}  padding={"1px"} mx={"7px"} bg={"red.500"}></Box>}
         <Avatar src={notification.sender.profilePic} mx={"10px"} my={"10px"}/>
-        {notification.type==="like" ? <Link to={`/${currentUser.username}/post/${notification.postId}`} onClick={handleSeenPost}>{notification.sender.username} liked your post</Link> : <Text>{notification.sender.username} reply on your post</Text>}
+        {notification.type==="like" && <Link to={`/${currentUser.username}/post/${notification. postId}`} onClick={handleSeenPost}>{notification.sender.username} liked your post</Link>
+        }
+        {notification.type==="reply" &&
+        <Flex direction={"column"} gap={"10px"}> 
+          <Link to={`/${currentUser.username}/post/${notification.postId}`} onClick={handleSeenPost}>{notification.sender.username}  reply on your post</Link>
+          <Text color={"#777"}>{notification.reply?.length > 20 ? notification.reply?.substring(0,20)+"..." : notification.reply }</Text>
+        </Flex>
+        }
         <Box ml={"auto"} mr={"25px"}
           style={{ cursor: 'pointer', transition: 'transform 0.3s ease-in-out' }}
-          
         >
           <TiDelete size={"25"} onClick={handleDeleteNotification} />
         </Box>

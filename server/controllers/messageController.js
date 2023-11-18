@@ -75,7 +75,7 @@ const getConversations = async (req,res)=>{
   
   const userId = req.user._id ;
   try{
-    const conversations = await Conversation.find({participants: userId}).populate({
+    const conversations = await Conversation.find({participants: userId}).sort({ updatedAt: -1 }).populate({
       path:"participants",
       select:"username profilePic"
     }) ; 

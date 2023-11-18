@@ -20,8 +20,39 @@ const ChatPage = () => {
   const currentUser = useRecoilValue(userAtom) ;
   const showToast = useShowToast() ;
   const {socket, onlineUsers} = useSocket() 
+
+  
   
   useEffect(()=>{
+    if (selectedConversation._id ===""){
+      socket?.on("newMessage",(message) => {
+
+        setConversations((prev)=>{
+          const updateConversations = prev.map(conversation => {
+            if (conversation._id === message.conversationId){
+              console.log("➡️➡️➡️➡️")
+              console.log(conversation._id)
+              console.log(message.conversationId)
+              return {
+                ...conversation,
+                lastMessage:{
+                  text:message.text,
+                  sender:message.sender
+                }
+              }
+            }
+            return conversation;
+          })
+          return updateConversations ;
+        })
+      })
+  }
+
+    return () => socket?.off("newMessage")
+  },[socket, selectedConversation, setConversations])
+
+  useEffect(()=>{
+    
     const getConversations = async () => {
       if (selectedConversation.mock) return ;
       try{
@@ -43,7 +74,7 @@ const ChatPage = () => {
     }
 
     getConversations();
-  },[showToast, setConversations])
+  },[showToast, setConversations, selectedConversation])
 
 
   useEffect(()=>{
@@ -89,11 +120,15 @@ const ChatPage = () => {
         (conversation) => conversation.participants[0]._id === searchedUser._id
       );
       if (foundConversation){
-        setSelectedConversation(
-          {_id:foundConversation._id, userId:searchedUser._id,
-          username:searchedUser.username,userProfilePic:searchedUser.profilePic
-          }
-          )
+        setSelectedConversation({
+          _id:foundConversation._id,
+          userId:searchedUser._id,
+          username:searchedUser.username,
+          userProfilePic:searchedUser.profilePic
+        })
+        setConversations((prevConvs) => [ foundConversation, ...prevConvs])
+
+        return ;
       }
       
       // if there is no conversation
@@ -114,7 +149,7 @@ const ChatPage = () => {
         ]
       }
       
-      setConversations((prevConvs) => [...prevConvs, mockConversation])
+      setConversations((prevConvs) => [ mockConversation, ...prevConvs])
 
     } catch (error) {
       showToast("Error", error.message, "error")
@@ -122,7 +157,25 @@ const ChatPage = () => {
       setSearchingUser(false) ;
     }
   }
+  
+  useEffect(()=>{
+    
+    if (selectedConversation._id===""){
+      console.log("No")
+    }
+  },[])
 
+  // useEffect(() => {
+  //   if (selectedConversation?._id && conversations.length > 0) {
+  //     setConversations((prevConversations) => {
+  //       const updatedConversations = prevConversations.filter(
+  //         (conversation) => conversation._id !== selectedConversation._id
+  //       );
+  
+  //       return [selectedConversation, ...updatedConversations];
+  //     });
+  //   }
+  // }, [selectedConversation]);
 
 
   return (
@@ -197,7 +250,7 @@ const ChatPage = () => {
               />
             ))
           }
-        
+          
           
         </Flex>
         {!selectedConversation._id &&(<Flex 

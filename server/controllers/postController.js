@@ -151,6 +151,23 @@ const replyToPost = async(req,res)=>{
 
     await post.save() ;
 
+    const notification = await new Notification({
+      recipient:post.postedBy.toString(),
+      sender:userId,
+      type:"reply",
+      postId:post._id,
+      seen:false,
+      reply:text
+    })
+
+    await notification.save() ;
+
+    console.log(notification) ;
+    const recipientSocketId = getRecipientSocketId(post.postedBy.toString())
+    if (recipientSocketId){  
+      io.to(recipientSocketId).emit("newNotification",{notification,senderUser:req.user})
+    }
+
     res.status(200).json(reply)
 
   }catch(err){

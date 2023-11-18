@@ -4,7 +4,7 @@ import Actions from "../components/Actions"
 import { useEffect, useState } from "react"
 import Comment from "../components/Comment"
 import useGetUserProfile from "../hooks/useGetUserProfile"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import useShowToast from "../hooks/useShowToast"
 import { formatDistanceToNow } from "date-fns"
 import { DeleteIcon } from "@chakra-ui/icons"
@@ -79,16 +79,21 @@ const PostPage = () => {
     <>
       <Flex justifyContent={"space-between"}>
         <Flex w={"full"} alignItems={"center"} gap={3}>
+          <Link to={`/${user?.username}`}>
           <Avatar size={"md"} name={user?.name} src={user?.profilePic}/>
+          </Link>
 
           <Flex>
-            <Text fontSize={"sm"} fontWeight={"bold"}>{user?.username}</Text>
+            <Link to={`/${user?.username}`}>
+              <Text fontSize={"sm"} fontWeight={"bold"}>{user?.username}</Text>
+            </Link>
             <Image src="/verified.png" w={4} h={4} ml={4}/>
           </Flex>
         </Flex>
         <Flex gap={4} alignItems={'center'}>
           <Text fontSize={"xs"} width={36} textAlign={"right"} color={'gray.light'}>
-            {formatDistanceToNow(new Date(currentPost.createdAt))} ago</Text>
+            {formatDistanceToNow(new Date(currentPost.createdAt))} ago
+          </Text>
 
           {currentUser?._id === user._id && <DeleteIcon onClick={handleDeletePost}/>}
         </Flex>

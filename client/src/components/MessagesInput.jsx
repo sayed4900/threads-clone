@@ -51,7 +51,7 @@ const MessagesInput = ({setMessages}) => {
         });
         return updatedConversation ;
       })
-
+      
       setMessageText("")
     } catch (error) {
       console.error('Error:', error);
