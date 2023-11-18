@@ -47,12 +47,20 @@ const Conversation = ({conversation, isOnline}) => {
         <Text fontWeight="700" display={"flex"} alignItems={"center"}>
           {user.username} <Image src="./verified.png" w={4} h={4} ml={1} />
         </Text>
-        <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>
-          {currentUser._id === lastMessage.sender ? 
-            <Box color={lastMessage.seen? "blue.400" : ""}><BsCheck2All size={16}/></Box>:"" 
-          }
-          {lastMessage.text.length > 18 ? lastMessage.text.substring(0, 18)+"...": lastMessage.text}
-        </Text>
+        <Flex justifyContent={"space-between"}>
+          <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>
+            {currentUser._id === lastMessage.sender ? 
+              <Box color={lastMessage.seen? "blue.400" : ""}><BsCheck2All size={16}/></Box>:"" 
+            }
+            {lastMessage.text.length > 10 ? lastMessage.text.substring(0, 10)+"...": lastMessage.text}
+          </Text>
+          <Box bg={"green.600"} width={"20px"} height={"20px"} borderRadius={"50%"}
+            display={"flex"} justifyContent={"center"} alignItems={"center"}
+            ml={"10px"} mr={"auto"}
+          >
+            <Text fontSize={"12px"} >7</Text>
+          </Box>
+        </Flex>
       </Stack>
       
     </Flex>

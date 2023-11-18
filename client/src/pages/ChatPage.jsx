@@ -23,33 +23,39 @@ const ChatPage = () => {
 
   
   
-  useEffect(()=>{
-    if (selectedConversation._id ===""){
-      socket?.on("newMessage",(message) => {
 
-        setConversations((prev)=>{
-          const updateConversations = prev.map(conversation => {
-            if (conversation._id === message.conversationId){
-              console.log("➡️➡️➡️➡️")
-              console.log(conversation._id)
-              console.log(message.conversationId)
+  useEffect(() => {
+    // if (selectedConversation._id === "") {
+      socket?.on("newMessage", (message) => {
+        setConversations((prev) => {
+          const updatedConversations = prev.map((conversation) => {
+            if (conversation._id === message.conversationId) {
               return {
                 ...conversation,
-                lastMessage:{
-                  text:message.text,
-                  sender:message.sender
+                lastMessage: {
+                  text: message.text,
+                  sender: message.sender,
                 }
-              }
+              };
             }
             return conversation;
-          })
-          return updateConversations ;
-        })
-      })
-  }
-
-    return () => socket?.off("newMessage")
-  },[socket, selectedConversation, setConversations])
+          });
+          
+          // Sort conversations to move the one with new message to the top
+          updatedConversations.sort((a, b) => {
+            if (a._id === message.conversationId) return -1;
+            if (b._id === message.conversationId) return 1;
+            return 0;
+          });
+          
+          return updatedConversations;
+        });
+      });
+    // }
+      console.log(conversations);
+    return () => socket?.off("newMessage");
+  }, [socket, selectedConversation, setConversations]);
+  
 
   useEffect(()=>{
     
@@ -157,25 +163,7 @@ const ChatPage = () => {
       setSearchingUser(false) ;
     }
   }
-  
-  useEffect(()=>{
-    
-    if (selectedConversation._id===""){
-      console.log("No")
-    }
-  },[])
 
-  // useEffect(() => {
-  //   if (selectedConversation?._id && conversations.length > 0) {
-  //     setConversations((prevConversations) => {
-  //       const updatedConversations = prevConversations.filter(
-  //         (conversation) => conversation._id !== selectedConversation._id
-  //       );
-  
-  //       return [selectedConversation, ...updatedConversations];
-  //     });
-  //   }
-  // }, [selectedConversation]);
 
 
   return (

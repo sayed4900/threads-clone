@@ -50,13 +50,13 @@ export default function LoginCard() {
       });
 
       const data = await res.json();
-      console.log(data);
+      
       if(data.error){
         showToast("Error",data.error,"error")
 
         return;
       }
-      
+      console.log(data);
       localStorage.setItem('user-threads', JSON.stringify(data))
       setUser(data);
     }catch(err){

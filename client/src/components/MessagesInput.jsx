@@ -36,22 +36,29 @@ const MessagesInput = ({setMessages}) => {
       setMessages((messages)=>[...messages, data])
       
 
-      setConversations(prevConvs=>{
-        const updatedConversation = prevConvs.map(conversation => {
-          if (conversation._id === selectedConversation._id){
-            return{
+      setConversations((prev) => {
+        const updatedConversations = prev.map((conversation) => {
+          if (conversation._id === selectedConversation._id) {
+            return {
               ...conversation,
-              lastMessage:{
-                text:messageText,
-                sender:data.sender
+              lastMessage: {
+                text: messageText,
+                sender: data.sender,
               }
-            }
+            };
           }
           return conversation;
         });
-        return updatedConversation ;
-      })
-      
+        
+        // Sort conversations to move the one with new message to the top
+        updatedConversations.sort((a, b) => {
+          if (a._id === selectedConversation._id) return -1;
+          if (b._id === selectedConversation._id) return 1;
+          return 0;
+        });
+        
+        return updatedConversations;
+      });
       setMessageText("")
     } catch (error) {
       console.error('Error:', error);
