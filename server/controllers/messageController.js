@@ -33,16 +33,18 @@ const sendMessage = async (req,res)=>{
     await Promise.all([
       newMessage.save(),
       conversation.updateOne({
+        $inc: { unseenMessagesCount: 1 },
         lastMessage:{
           text: message,
           sender:senderId
         }
       })
     ]) 
-
+    
     const recipientSocketId = getRecipientSocketId(recipientedId) ; 
     if (recipientSocketId){  
-      io.to(recipientSocketId).emit("newMessage",newMessage)
+      io.to(recipientSocketId).emit("newMessage", {message:newMessage,
+        unseenMessagesCount:conversation.unseenMessagesCount})
     }
 
     res.status(201).json(newMessage)

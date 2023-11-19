@@ -12,6 +12,7 @@ export const selectedConversationAtom = atom({
   userId:"", // the other user that we chat with him..
   username:"",
   userProfilePic:"",
+  unseenMessagesCount:0
   }
 
 })

@@ -29,7 +29,7 @@ io.on('connection',(socket)=>{
   socket.on("markMessagesAsSeen", async({conversationId, userId})=>{
     try {
       await Message.updateMany({conversationId:conversationId , seen:false}, {$set:{seen:true}})
-      await Conversation.updateOne({_id:conversationId}, {$set:{"lastMessage.seen" : true}})
+      await Conversation.updateOne({_id:conversationId}, {$set:{"lastMessage.seen" : true,unseenMessagesCount:0}})
       io.to(userSocketMap[userId]).emit("messageSeen",{conversationId})
     } catch (error) {
       console.log(error)

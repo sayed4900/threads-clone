@@ -26,7 +26,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     // if (selectedConversation._id === "") {
-      socket?.on("newMessage", (message) => {
+      socket?.on("newMessage", ({message,unseenMessagesCount}) => {
         setConversations((prev) => {
           const updatedConversations = prev.map((conversation) => {
             if (conversation._id === message.conversationId) {
@@ -35,10 +35,13 @@ const ChatPage = () => {
                 lastMessage: {
                   text: message.text,
                   sender: message.sender,
-                }
+                },
+                unseenMessagesCount:unseenMessagesCount === 0 ? 1 : unseenMessagesCount+1
               };
             }
-            return conversation;
+            
+            return conversation
+            // return {...conversation, unseenMessagesCount};
           });
           
           // Sort conversations to move the one with new message to the top

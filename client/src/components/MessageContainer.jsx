@@ -19,10 +19,11 @@ const MessageContainer = () => {
   const messageEndRef = useRef(null) ;
 
   useEffect(()=>{
-    socket.on("newMessage",(message) => {
+    socket.on("newMessage",({message, unseenMessagesCount}) => {
 
       if (selectedConversation._id === message.conversationId){
         setMessages((prevMessages)=>[...prevMessages, message])
+        
       }
       
       setConversations((prev)=>{
@@ -33,10 +34,12 @@ const MessageContainer = () => {
               lastMessage:{
                 text:message.text,
                 sender:message.sender
-              }
+              },
+              unseenMessagesCount
             }
           }
-          return conversation;
+          return conversation ;
+          // return {...conversation, unseenMessagesCount};
         })
         return updateConversations ;
       })

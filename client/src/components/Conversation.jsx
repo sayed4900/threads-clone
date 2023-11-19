@@ -7,12 +7,11 @@ import { selectedConversationAtom } from '../atoms/messagesAtom';
 
 
 const Conversation = ({conversation, isOnline}) => {
-  const user = conversation.participants[0] ;
-  const lastMessage = conversation.lastMessage;
+  const user = conversation.participants[0] ; // recipent
+  const lastMessage = conversation.lastMessage; // has inforamtion about sender
   const currentUser = useRecoilValue(userAtom)
   const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
   const colorMode = useColorMode() ;
-  
   return (
     <Flex
       gap={4}
@@ -28,7 +27,8 @@ const Conversation = ({conversation, isOnline}) => {
         userId:user._id,
         userProfilePic:user.profilePic,
         username:user.username,
-        mock: conversation.mock
+        mock: conversation.mock,
+        unseenMessagesCount: user._id ===lastMessage.sender ? 0 : conversation.unseenMessagesCount
       }) }
       borderRadius={"md"}
       bg={selectedConversation._id === conversation._id ? 
@@ -54,12 +54,16 @@ const Conversation = ({conversation, isOnline}) => {
             }
             {lastMessage.text.length > 10 ? lastMessage.text.substring(0, 10)+"...": lastMessage.text}
           </Text>
-          <Box bg={"green.600"} width={"20px"} height={"20px"} borderRadius={"50%"}
-            display={"flex"} justifyContent={"center"} alignItems={"center"}
-            ml={"10px"} mr={"auto"}
-          >
-            <Text fontSize={"12px"} >7</Text>
+          {conversation.unseenMessagesCount>0&&user._id ===lastMessage.sender&&
+
+            <Box bg={"green.600"} width={"20px"} height={"20px"} borderRadius={"50%"}
+              display={"flex"} justifyContent={"center"} alignItems={"center"}
+              ml={"10px"} mr={"auto"}
+            >
+            
+            <Text fontSize={"12px"} >{conversation.unseenMessagesCount}</Text>
           </Box>
+          }
         </Flex>
       </Stack>
       
