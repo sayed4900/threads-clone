@@ -13,6 +13,7 @@ import notificationAtom from '../atoms/notificationAtom';
 import { useState } from "react";
 import NotificationItem from "./NotificationItem";
 import NotificationBell from "./NotificationBell";
+import MessageIcon from "./MessageIcon";
 
 const Header = () => {
   const {colorMode, toggleColorMode} = useColorMode();
@@ -49,9 +50,11 @@ const Header = () => {
           <Link as={RouterLink} to={`/${user.username}`}>
             <RxAvatar size={"24"}/>
           </Link>
-          <Link as={RouterLink} to={`/chat`}>
-            <BsFillChatQuoteFill size={"20"}/>
-          </Link>
+
+          {/* <Link as={RouterLink} to={`/chat`}> */}
+            {/* <BsFillChatQuoteFill size={"20"}/> */}
+          {/* </Link> */}
+          {user && <MessageIcon notifications={notifications}/>}
           {user && <NotificationBell notifications={notifications} />}
           <Button
             onClick={logout}

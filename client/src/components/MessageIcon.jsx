@@ -1,9 +1,11 @@
 import { Box, Text } from '@chakra-ui/react';
 import React, { useState, useEffect, useRef } from 'react';
-import { FaBell } from 'react-icons/fa';
+import { BsFillChatQuoteFill } from "react-icons/bs";
 import NotificationItem from './NotificationItem';
+import { Link } from 'react-router-dom';
 
-const NotificationBell = ({ notifications }) => {
+
+const MessageIcon = ({ notifications }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [seenNotifications, setSeenNotifications] = useState(0) ;
 
@@ -41,11 +43,11 @@ const NotificationBell = ({ notifications }) => {
   }, [isOpen]);
 
   useEffect(()=>{
-
+    
     setSeenNotifications( notifications.reduce((count, notification) => {
-      return notification.seen===false && notification.type!=="message" ? count+1 : count ;
-    }, 0)
-    )
+      return notification.seen === false && notification.type === "message"?
+      count+1 : count  ;
+    }, 0))
   },[notifications])
 
 
@@ -72,9 +74,10 @@ const NotificationBell = ({ notifications }) => {
         </Box>
       )}
       <Box>
-        <FaBell size="18" />
+        <BsFillChatQuoteFill size="20" />
       </Box>
       {isOpen && (
+        <>
         <Box
           width="370px"
           height="280px"
@@ -90,7 +93,7 @@ const NotificationBell = ({ notifications }) => {
           {/* {notifications.length > 0 && <Text textAlign="center">Show All Notifications</Text  >} */}
           {notifications.length > 0 ? (
             notifications.map((notification, index) => (
-              notification.type!=="message" && (<NotificationItem key={index} notification={notification} setIsOpen={setIsOpen} />)
+              notification.type==="message" && (<NotificationItem key={index} notification={notification} setIsOpen={setIsOpen} />)
             ))
           ) : (
             <Text textAlign="center" my="50px" color="white">
@@ -98,9 +101,27 @@ const NotificationBell = ({ notifications }) => {
             </Text>
           )}
         </Box>
+        <Box
+          position="absolute"
+          top="1400%"
+          right="73px" /* Adjust the right position as needed */
+          width="200px" /* Adjust width as needed */
+          height="40px" /* Adjust height as needed */
+          bg="gray.600" /* Background color */
+          borderRadius={"6px"}
+          display={"flex"}
+          alignItems={"center"}
+          justifyContent={"center"}
+      >
+        <Link to="/chat">
+          <Text>See All Conversation</Text>
+        </Link>
+      </Box>
+    </>
       )}
+      
     </Box>
   );
 };
 
-export default NotificationBell;
+export default MessageIcon;

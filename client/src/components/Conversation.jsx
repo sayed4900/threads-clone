@@ -28,7 +28,7 @@ const Conversation = ({conversation, isOnline}) => {
         userProfilePic:user.profilePic,
         username:user.username,
         mock: conversation.mock,
-        unseenMessagesCount: user._id ===lastMessage.sender ? 0 : conversation.unseenMessagesCount
+        unseenMessagesCount: user._id !=lastMessage.sender ? 0 : conversation.unseenMessagesCount
       }) }
       borderRadius={"md"}
       bg={selectedConversation._id === conversation._id ? 

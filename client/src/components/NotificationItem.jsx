@@ -1,11 +1,12 @@
 import { Avatar, Box, Divider, Flex, Text } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import React, { useState } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import userAtom from '../atoms/userAtom'
 import { TiDelete } from "react-icons/ti";
 import useShowToast from '../hooks/useShowToast'
 import notificationAtom from '../atoms/notificationAtom'
+import { selectedConversationAtom } from '../atoms/messagesAtom'
 
 
 const NotificationItem = ({notification}) => {
@@ -13,6 +14,7 @@ const NotificationItem = ({notification}) => {
   const showToast = useShowToast() ;
   const setNotificationsState = useSetRecoilState(notificationAtom)
   const [isRemoving, setIsRemoving] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useRecoilState(selectedConversationAtom)
 
   
   const handleDeleteNotification = async(event)=>{
@@ -58,11 +60,22 @@ const NotificationItem = ({notification}) => {
         })
         return updateNotifications ;
       })
+      if(notification.type === "message"){
+        setSelectedConversation({
+          _id:notification.conversationId,
+          userId:notification.sender._id,
+          username:notification.sender.username,
+          userProfilePic:notification.sender.profilePic
+        })  
+      }
       
+      console.log(selectedConversation)
     } catch (error) {
       showToast("Error", error.message, "error")
     }
   }
+
+
   return (
     <>
       <Flex my={"5px"} alignItems={"center"} padding={"3px"}
@@ -82,10 +95,17 @@ const NotificationItem = ({notification}) => {
           <Text color={"#777"}>{notification.reply?.length > 20 ? notification.reply?.substring(0,20)+"..." : notification.reply }</Text>
         </Flex>
         }
+        {notification.type==="message" &&
+        <Flex direction={"column"} gap={"10px"}> 
+          <Link to={`/chat`} onClick={handleSeenPost}>{notification.sender.username} send to you new message</Link>
+          <Text color={"#777"}>{notification.reply?.length > 20 ? notification.reply?.substring(0,20)+"..." : notification.reply }</Text>
+        </Flex>
+        }
         <Box ml={"auto"} mr={"25px"}
           style={{ cursor: 'pointer', transition: 'transform 0.3s ease-in-out' }}
         >
-          <TiDelete size={"25"} onClick={handleDeleteNotification} />
+          {notification.type!=="message" &&<TiDelete size={"25"}
+            onClick={handleDeleteNotification} />}
         </Box>
       </Flex>
       <Divider />

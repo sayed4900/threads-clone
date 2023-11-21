@@ -5,4 +5,5 @@ const notificationAtom = atom({
   default:[]
 })
 
+
 export default notificationAtom;

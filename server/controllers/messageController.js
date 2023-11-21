@@ -1,5 +1,6 @@
 const Conversation = require("../models/conversationModel");
 const Message = require("../models/messageModel");
+const Notification = require("../models/notificationModel");
 const {io, getRecipientSocketId } = require("../socket/socket");
 
 const sendMessage = async (req,res)=>{
@@ -30,6 +31,23 @@ const sendMessage = async (req,res)=>{
       text:message
     })
 
+    // if the there is a notification with the same conversation, change the data on it only else create new one and on the client side 
+    let notification = await Notification.findOne({conversationId:conversation._id})
+    
+    if (!notification){
+      notification = await new Notification({
+        recipient:recipientedId,
+        sender:senderId,
+        type:"message",
+        conversationId:conversation._id,
+        seen:false,
+        reply:message,
+      })
+    }else{
+      notification.reply = message;
+  
+    }
+
     await Promise.all([
       newMessage.save(),
       conversation.updateOne({
@@ -38,13 +56,20 @@ const sendMessage = async (req,res)=>{
           text: message,
           sender:senderId
         }
-      })
+      }),
+      await notification.save()
     ]) 
     
+
+    
+
     const recipientSocketId = getRecipientSocketId(recipientedId) ; 
     if (recipientSocketId){  
       io.to(recipientSocketId).emit("newMessage", {message:newMessage,
         unseenMessagesCount:conversation.unseenMessagesCount})
+
+      io.to(recipientSocketId).emit("newNotification",{notification,senderUser:req.user})
+      
     }
 
     res.status(201).json(newMessage)

@@ -36,8 +36,11 @@ export const SocketContextProvider = ({children}) =>{
       notification.sender={} ;
       notification.sender.username= senderUser.username
       notification.sender.profilePic= senderUser.profilePic
-      
+      if (notification.type==="message"){
+        setNotifications((prevNots)=>prevNots.filter(n => n.conversationId !== notification.conversationId)) ; 
+      }
       setNotifications((prev)=>[notification,...prev])
+      
       console.log(notification.sender)
       
       if (senderUser._id !== user._id)
