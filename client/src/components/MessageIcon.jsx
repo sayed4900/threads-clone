@@ -5,7 +5,7 @@ import NotificationItem from './NotificationItem';
 import { Link } from 'react-router-dom';
 
 
-const MessageIcon = ({ notifications }) => {
+const MessageIcon = ({ notifications, currentUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [seenNotifications, setSeenNotifications] = useState(0) ;
 
@@ -81,7 +81,7 @@ const MessageIcon = ({ notifications }) => {
         <Box
           width="370px"
           height="280px"
-          borderRadius="sm"
+          borderRadius="md"
           bg="gray.700"
           position="absolute"
           top="40px"
@@ -89,12 +89,30 @@ const MessageIcon = ({ notifications }) => {
           flexDirection="column"
           ref={notificationBoxRef}
           overflowY={"scroll"}
+          
         >
           {/* {notifications.length > 0 && <Text textAlign="center">Show All Notifications</Text  >} */}
           {notifications.length > 0 ? (
-            notifications.map((notification, index) => (
-              notification.type==="message" && (<NotificationItem key={index} notification={notification} setIsOpen={setIsOpen} />)
-            ))
+            notifications.map((notification, index) => {
+              const ids = [notification.sender, notification.recipient];
+            
+              // Filter out the current user's ID from the array
+              const recipientId = ids.find(id => id?._id !== currentUser._id);
+              
+              if (recipientId) {
+                // Here, recipientId will be the ID of the recipient
+                return (
+                  <NotificationItem
+                    key={index}
+                    notification={notification}
+                    recipient={recipientId}
+                    setIsOpen={setIsOpen}
+                  />
+                );
+              }
+            
+              return null; // If recipientId is not found or matches currentUser, return null (skip rendering)
+            })
           ) : (
             <Text textAlign="center" my="50px" color="white">
               No new notifications
@@ -114,7 +132,7 @@ const MessageIcon = ({ notifications }) => {
           justifyContent={"center"}
       >
         <Link to="/chat">
-          <Text>See All Conversation</Text>
+          See All Conversation
         </Link>
       </Box>
     </>

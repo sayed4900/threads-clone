@@ -24,6 +24,16 @@ const sendMessage = async (req,res)=>{
 
       await conversation.save();
     }
+    conversation = await Conversation.findById(conversation._id)
+    .populate({
+      path: 'participants',
+      select: '_id username profilePic'
+    })
+    .exec();
+
+    conversation.participants = conversation.participants.filter(
+      participant => participant._id.toString() !== senderId.toString()
+    );
 
     const newMessage = new Message({
       conversationId: conversation._id,
@@ -45,7 +55,9 @@ const sendMessage = async (req,res)=>{
       })
     }else{
       notification.reply = message;
-  
+      notification.recipient = recipientedId ; 
+      notification.sender = senderId ; 
+      notification.seen = false ;
     }
 
     await Promise.all([
@@ -57,7 +69,7 @@ const sendMessage = async (req,res)=>{
           sender:senderId
         }
       }),
-      await notification.save()
+      notification.save()
     ]) 
     
 
@@ -68,7 +80,8 @@ const sendMessage = async (req,res)=>{
       io.to(recipientSocketId).emit("newMessage", {message:newMessage,
         unseenMessagesCount:conversation.unseenMessagesCount})
 
-      io.to(recipientSocketId).emit("newNotification",{notification,senderUser:req.user})
+      io.to(recipientSocketId)
+      .emit("messageNotification",{notification,recipient:conversation.participants[0], sender:req.user})
       
     }
 

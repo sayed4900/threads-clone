@@ -3,13 +3,14 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import {AiFillHome} from 'react-icons/ai'
 import {RxAvatar} from 'react-icons/rx'
-import {Link as RouterLink} from 'react-router-dom'
+import {BrowserRouter, Link as RouterLink} from 'react-router-dom'
 import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/useLogout";
 import authScreenAtom from "../atoms/authAtom";
 import { BsFillChatQuoteFill } from "react-icons/bs";
 import {FaBell} from 'react-icons/fa' ;
 import notificationAtom from '../atoms/notificationAtom';
+import {messageNotificationAtom} from '../atoms/notificationAtom';
 import { useState } from "react";
 import NotificationItem from "./NotificationItem";
 import NotificationBell from "./NotificationBell";
@@ -21,6 +22,7 @@ const Header = () => {
   const logout = useLogout() ;
   const setAuthScreen = useSetRecoilState(authScreenAtom)
   const notifications = useRecoilValue(notificationAtom)
+  const messageNotifications = useRecoilValue(messageNotificationAtom)
 
   
   
@@ -54,7 +56,10 @@ const Header = () => {
           {/* <Link as={RouterLink} to={`/chat`}> */}
             {/* <BsFillChatQuoteFill size={"20"}/> */}
           {/* </Link> */}
-          {user && <MessageIcon notifications={notifications}/>}
+          
+          {user && <MessageIcon notifications={messageNotifications} currentUser={user}/>}
+          
+          
           {user && <NotificationBell notifications={notifications} />}
           <Button
             onClick={logout}

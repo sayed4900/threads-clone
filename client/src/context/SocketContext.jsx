@@ -4,6 +4,7 @@ import io from 'socket.io-client' ;
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import notificationAtom from "../atoms/notificationAtom";
+import {messageNotificationAtom} from "../atoms/notificationAtom";
 
 
 const SocketContext = createContext() ;
@@ -17,6 +18,7 @@ export const SocketContextProvider = ({children}) =>{
   const user = useRecoilValue(userAtom);
   const [onlineUsers, setOnlineUsers] = useState([]) ;
   const [notifications, setNotifications] = useRecoilState(notificationAtom) ;
+  const [messageNotifications, setMessageNotifications] = useRecoilState(messageNotificationAtom) ;
 
   const showToast = useShowToast() ;
 
@@ -36,9 +38,7 @@ export const SocketContextProvider = ({children}) =>{
       notification.sender={} ;
       notification.sender.username= senderUser.username
       notification.sender.profilePic= senderUser.profilePic
-      if (notification.type==="message"){
-        setNotifications((prevNots)=>prevNots.filter(n => n.conversationId !== notification.conversationId)) ; 
-      }
+      
       setNotifications((prev)=>[notification,...prev])
       
       console.log(notification.sender)
@@ -46,8 +46,22 @@ export const SocketContextProvider = ({children}) =>{
       if (senderUser._id !== user._id)
         showToast("Notification", "You have a new notification", "success")
     })
+    
+    socket.on("messageNotification",({notification, recipient, sender}) => {
+      // 
+      notification.recipient={} ; 
+      notification.recipient.username = recipient.username ;
+      notification.recipient.profilePic= recipient.profilePic ;
+      
+      notification.sender={} ; 
+      notification.sender.username = sender.username ;
+      notification.sender.profilePic= sender.profilePic ;
+      
+        setMessageNotifications((prevNots)=>prevNots.filter(n => n.conversationId !== notification.conversationId)) ; 
 
-
+        setMessageNotifications((prevNots)=> [notification, ...prevNots])
+      
+    })
     
 
     return () => socket && socket.close();
@@ -74,7 +88,23 @@ export const SocketContextProvider = ({children}) =>{
         showToast("Error", error.message, "error")
       }
     }
+    const getMessageNotifications = async () => {
+      try {
+        const res = await fetch(`/api/notifications/message-notification`) ;
+          const data = await res.json()
+          console.log(data)
+          if (data.error){
+            showToast("Error", data.error, "error") ;
+            return ;
+          }
+        setMessageNotifications(data)
+        console.log(data)
+      } catch (error) {
+        showToast("Error", error.message, "error")
+      }
+    }
     getNotifications();
+    getMessageNotifications();
   },[showToast, user])
 
   console.log(notifications)

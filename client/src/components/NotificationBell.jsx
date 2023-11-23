@@ -90,7 +90,7 @@ const NotificationBell = ({ notifications }) => {
           {/* {notifications.length > 0 && <Text textAlign="center">Show All Notifications</Text  >} */}
           {notifications.length > 0 ? (
             notifications.map((notification, index) => (
-              notification.type!=="message" && (<NotificationItem key={index} notification={notification} setIsOpen={setIsOpen} />)
+              notification.type!=="message" && (<NotificationItem key={index} notification={notification} recipient={notification.sender} setIsOpen={setIsOpen} />)
             ))
           ) : (
             <Text textAlign="center" my="50px" color="white">

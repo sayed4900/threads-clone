@@ -14,6 +14,27 @@ const getNotifications = async(req,res) =>{
     console.log(err);
   }
 }
+const getMessagesNotifications = async(req,res) =>{
+  try {
+    const notifications = await Notification.
+    find({$or:[{recipient:req.user._id}, {sender: req.user._id}],type:"message"}).
+    populate({
+      path:"recipient",
+      select:" _id username profilePic"
+    })
+    .populate({
+      path:"sender",
+      select:"_id username profilePic"
+    })
+    .sort({createdAt:"-1"})
+    .lean() ; 
+    
+    res.status(200).json(notifications)
+  } catch (err) {
+    res.status(500).json({error:err.message})
+    console.log(err);
+  }
+}
 const markNotiticationAsSeen = async(req,res)=>{
   try {
     await Notification.findByIdAndUpdate(req.params.id, {$set: {seen:true}})
@@ -32,4 +53,4 @@ const deleteNotifiction = async(req,res)=>{
     res.status(500).json({error:err.message})
   }
 }
-module.exports = {getNotifications, markNotiticationAsSeen, deleteNotifiction}
+module.exports = {getNotifications,getMessagesNotifications,markNotiticationAsSeen, deleteNotifiction}

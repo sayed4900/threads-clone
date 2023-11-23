@@ -4,12 +4,14 @@ import {IoSendSharp} from 'react-icons/io5'
 import useShowToast from '../hooks/useShowToast';
 import {  useRecoilValue, useSetRecoilState } from 'recoil';
 import { conversationAtom, selectedConversationAtom } from '../atoms/messagesAtom';
+import { messageNotificationAtom } from '../atoms/notificationAtom';
 
 const MessagesInput = ({setMessages}) => {
   const [messageText, setMessageText] = useState("") ;
   const showToast = useShowToast() ;
   const selectedConversation = useRecoilValue(selectedConversationAtom)
   const setConversations = useSetRecoilState(conversationAtom)
+  const messageNotification = useSetRecoilState(messageNotificationAtom)
   
 
   const handleSendMessage = async(e) =>{
@@ -60,6 +62,8 @@ const MessagesInput = ({setMessages}) => {
         return updatedConversations;
       });
       setMessageText("")
+
+      
     } catch (error) {
       console.error('Error:', error);
       showToast("Error", error.message, "error")

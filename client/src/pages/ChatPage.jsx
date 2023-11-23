@@ -1,7 +1,7 @@
 import { SearchIcon} from '@chakra-ui/icons'
 import {GiConversation} from 'react-icons/gi'
 import { Box, Button, Flex, Input, Skeleton, SkeletonCircle, Text, useColorMode, useColorModePreference } from '@chakra-ui/react'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Conversation from '../components/Conversation'
 import MessageContainer from '../components/MessageContainer'
 import Message from '../components/Message'
