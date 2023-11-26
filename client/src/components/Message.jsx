@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil'
 import { selectedConversationAtom } from '../atoms/messagesAtom'
 import userAtom from '../atoms/userAtom'
 import {BsCheck2All} from 'react-icons/bs'
- 
+
 const Message = ({message, ownMessage}) => {
   const selectedConversation = useRecoilValue(selectedConversationAtom) ;
   const currentUser = useRecoilValue(userAtom) ;

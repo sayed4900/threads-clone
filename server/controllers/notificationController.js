@@ -26,7 +26,7 @@ const getMessagesNotifications = async(req,res) =>{
       path:"sender",
       select:"_id username profilePic"
     })
-    .sort({createdAt:"-1"})
+    .sort({seen:false , updatedAt:"-1"})
     .lean() ; 
     
     res.status(200).json(notifications)

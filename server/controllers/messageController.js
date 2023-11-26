@@ -96,8 +96,8 @@ const getMessages = async (req,res)=>{
   const {otherUserId} = req.params ; 
   const userId = req.user._id ;
   try{
-    const conversation = await Conversation.findOne({participants:{$all :[otherUserId, userId]}
-    })
+    const conversation = await Conversation
+    .findOne({participants:{$all :[otherUserId, userId]}})
 
     if (!conversation){
       return res.status(404).json({error:"Conversation not found"})

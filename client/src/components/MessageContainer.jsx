@@ -52,7 +52,7 @@ const MessageContainer = () => {
   useEffect(()=>{
     const lastMessageIsFromOtherUser = messages.length &&
     messages[messages.length - 1].sender !== currentUser._id
-    console.log(messages[messages.length - 1 ]);
+    
     if (lastMessageIsFromOtherUser){
       socket.emit("markMessagesAsSeen",{
         conversationId:selectedConversation._id,

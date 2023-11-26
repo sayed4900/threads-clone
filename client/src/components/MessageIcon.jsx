@@ -29,10 +29,10 @@ const MessageIcon = ({ notifications, currentUser }) => {
 
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      // document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscKey);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      // document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscKey);
     }
 
@@ -45,7 +45,7 @@ const MessageIcon = ({ notifications, currentUser }) => {
   useEffect(()=>{
     
     setSeenNotifications( notifications.reduce((count, notification) => {
-      return notification.seen === false && notification.type === "message"?
+      return notification.seen === false && notification.type === "message" && notification.sender._id != currentUser._id?
       count+1 : count  ;
     }, 0))
   },[notifications])
@@ -74,7 +74,9 @@ const MessageIcon = ({ notifications, currentUser }) => {
         </Box>
       )}
       <Box>
+        {/* <Link to={'/chat'}> */}
         <BsFillChatQuoteFill size="20" />
+        {/* </Link> */}
       </Box>
       {isOpen && (
         <>
@@ -90,8 +92,7 @@ const MessageIcon = ({ notifications, currentUser }) => {
           ref={notificationBoxRef}
           overflowY={"scroll"}
           
-        >
-          {/* {notifications.length > 0 && <Text textAlign="center">Show All Notifications</Text  >} */}
+        >         
           {notifications.length > 0 ? (
             notifications.map((notification, index) => {
               const ids = [notification.sender, notification.recipient];
@@ -119,22 +120,24 @@ const MessageIcon = ({ notifications, currentUser }) => {
             </Text>
           )}
         </Box>
-        <Box
-          position="absolute"
-          top="1400%"
-          right="73px" /* Adjust the right position as needed */
-          width="200px" /* Adjust width as needed */
-          height="40px" /* Adjust height as needed */
-          bg="gray.600" /* Background color */
-          borderRadius={"6px"}
-          display={"flex"}
-          alignItems={"center"}
-          justifyContent={"center"}
-      >
         <Link to="/chat">
+          <Box
+            position="absolute"
+            top="1400%"
+            right="73px" 
+            width="200px" 
+            height="40px" 
+            bg="gray.600" 
+            borderRadius={"6px"}
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            onClick={()=>console.log("clicked")}
+          >
+        
           See All Conversation
+          </Box>
         </Link>
-      </Box>
     </>
       )}
       

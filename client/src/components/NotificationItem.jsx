@@ -9,7 +9,7 @@ import notificationAtom, { messageNotificationAtom } from '../atoms/notification
 import { selectedConversationAtom } from '../atoms/messagesAtom'
 
 
-const NotificationItem = ({notification,recipient}) => {
+const NotificationItem = ({notification,recipient, setIsOpen}) => {
   const currentUser = useRecoilValue(userAtom)
   const showToast = useShowToast() ;
   const setNotificationsState = useSetRecoilState(notificationAtom)
@@ -40,6 +40,8 @@ const NotificationItem = ({notification,recipient}) => {
       
     } catch (error) {
       showToast("Error", error.message, "error")
+    }finally{
+      setIsRemoving(false)
     }
   }
   const handleSeenNotification = async(event)=>{
@@ -64,11 +66,11 @@ const NotificationItem = ({notification,recipient}) => {
       })
 
       if(notification.type === "message"){
-        console.log(notification.sender._id)
-        const userId = notification.sender._id.toString()
+        setIsOpen(false)
+        
         setSelectedConversation({
           _id:notification.conversationId,
-          userId:userId,
+          userId: notification.sender._id,
           username:notification.sender.username,
           userProfilePic:notification.sender.profilePic
         })  
@@ -96,8 +98,8 @@ const NotificationItem = ({notification,recipient}) => {
     <>
       <Flex my={"5px"} alignItems={"center"} padding={"3px"}
         style={{
-          transition: 'transform 0.5s ease-out', // CSS transition for transform
-          transform: isRemoving ? 'translateX(-100%)' : 'translateX(0)', // Move item offscreen on removal
+          transition: 'transform 0.5s ease-out', 
+          transform: isRemoving ? 'translateX(-100%)' : 'translateX(0)', 
         }}
       >
         {!notification.seen &&notification.sender.username!==currentUser.username&&
@@ -113,10 +115,11 @@ const NotificationItem = ({notification,recipient}) => {
         </Flex>
         }
         {notification.type==="message" &&
+        <Link to={`/chat`} onClick={handleSeenNotification}>{recipient.username} 
         <Flex direction={"column"} gap={"10px"}> 
-          <Link to={`/chat`} onClick={handleSeenNotification}>{recipient.username} </Link>
           <Text color={"#777"}>{notification.reply?.length > 20 ? notification.reply?.substring(0,20)+"..." : notification.reply }</Text>
         </Flex>
+        </Link>
         }
         <Box ml={"auto"} mr={"25px"}
           style={{ cursor: 'pointer', transition: 'transform 0.3s ease-in-out' }}
