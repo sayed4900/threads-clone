@@ -1,4 +1,4 @@
-<h3 align="center">ConnectME</h3>
+<h3 align="center">threads clone</h3>
 
 
 
