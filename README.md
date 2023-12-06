@@ -103,9 +103,10 @@ You can create an account or login with google account.
     ```npm run dev```
 
 
-## Demo account
-- username: demo
-- Password: 1234
+## Demo Video
+[Link](https://www.youtube.com/watch?v=sm3WxiJI3TI)<br>
+
+
 
 
 ## Questions
